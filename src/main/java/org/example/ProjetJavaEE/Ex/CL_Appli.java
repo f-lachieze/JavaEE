@@ -70,9 +70,13 @@ public class CL_Appli implements CommandLineRunner {
 		// 2. Tester les salles de TD spécifiques à Montpellier
 		tsSallesTDSpecifiquesMontpellier();
 
-		// ... autres appels pour le TP2 ...
+		// 3.  tester si on a des amphis du campus triolet qui ont plus de 80 places
+		tsListerAmphisSpecifiques();
+
+		// TP2 Q4.
 		tsCapaciteTotale();
 
+		// ... autres appels pour le TP2 ...
 	}
 	
 	
@@ -272,6 +276,30 @@ public class CL_Appli implements CommandLineRunner {
 		// Remarque : Si vous voulez afficher la liste des salles, il faudrait une nouvelle méthode
 		// dans GestionCampusService qui retourne List<Salle>.
 	}
+
+	// Dans CL_Appli.java, à l'intérieur de la méthode tsListerAmphisSpecifiques()
+
+	// TP2 question 3
+	public void tsListerAmphisSpecifiques() {
+		String campusRecherche = "Triolet"; // Le nom du campus à tester
+		int capaciteMinimale = 80;         // La capacité minimale
+
+		System.out.println("\n-> 3. Amphis de " + campusRecherche + " avec au moins " + capaciteMinimale + " places :");
+
+		// Correction de l'appel au service :
+		List<Salle> amphis = gcs.findAmphisByCampusAndCapaciteMin(campusRecherche, capaciteMinimale);
+
+		if (amphis.isEmpty()) {
+			System.out.println("Aucun amphi trouvé correspondant aux critères.");
+		} else {
+			// Affichage des résultats
+			amphis.forEach(salle -> System.out.println("  - " + salle.getNumSalle() + " (" + salle.getCapacite() + " places)"));
+		}
+	}
+
+// Assurez-vous d'appeler tsListerAmphisSpecifiques() dans votre run() :
+// tsListerAmphisSpecifiques();
+
 
 	/**
 	 * TP2 - Question 4 : Quelle est la capacité totale en places assises d'un campus/bâtiment?

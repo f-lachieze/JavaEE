@@ -14,6 +14,9 @@ public interface GestionCampusService {
     // sont disponibles sur les campus situés à Montpellier?
     Long compterTDSallesMontpellier();
 
+    // 3. Lister les amphis d'un campus avec une capacité minimale
+    List<Salle> listerAmphisParCampusAvecCapaciteMin(String nomCampus, int capaciteMin);
+
     // 4. Quelle est la capacité totale en terme de places assises d'un campus en particulier ou d'un de
     // ses bâtiments?
     Long calculerCapaciteTotaleCampus(String nomCampus);

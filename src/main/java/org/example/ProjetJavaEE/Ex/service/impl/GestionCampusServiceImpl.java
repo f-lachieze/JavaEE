@@ -7,6 +7,7 @@ import org.example.ProjetJavaEE.Ex.service.GestionCampusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import org.example.ProjetJavaEE.Ex.modele.TypeSalle;
 
 @Service
 public class GestionCampusServiceImpl implements GestionCampusService {
@@ -61,6 +62,13 @@ public class GestionCampusServiceImpl implements GestionCampusService {
 
     @Override
     public List<Salle> findAmphisByCampusAndCapaciteMin(String nomCampus, int capaciteMin) {
+        return salleRepository.findAmphisByCampusAndCapaciteMin(nomCampus, capaciteMin);
+    }
+
+    // TP2 question 3
+    @Override
+    public List<Salle> listerAmphisParCampusAvecCapaciteMin(String nomCampus, int capaciteMin) {
+        // On appelle la méthode du repository en spécifiant que le type est AMPHI
         return salleRepository.findAmphisByCampusAndCapaciteMin(nomCampus, capaciteMin);
     }
 
