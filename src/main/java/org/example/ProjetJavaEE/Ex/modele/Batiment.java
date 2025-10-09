@@ -12,18 +12,18 @@ public class Batiment {
 	@Column(name = "codeB", unique = true, nullable = false)
 	private String codeB;
 	
-	@Column(name= "anneC", nullable = false)
-	private int anneeC;
+	@Column(name= "anneec", nullable = false)
+	private int anneeConstruction;
 
 	// Relation ManyToOne avec Campus (pour l'enrichir)
 	// Campus(nomC) est la FK dans la table Batiment [cite: 42]
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "campus")
+	@JoinColumn(name = "campus", nullable = false)
 	private Campus campus; // Un bâtiment appartient à un campus [cite: 5, 11]
 
 	// 1. Association One-to-Many avec Salle
 	// MappedBy pointe vers l'attribut 'building' dans la classe Salle [cite: 17]
-	@OneToMany(mappedBy = "building", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "batiment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private Set<Salle> salles;
 
 	// 2. Association Many-to-Many avec Composante (Inverse de celle dans Composante)
@@ -34,10 +34,10 @@ public class Batiment {
 	// Constructeur par défaut (requis)
 	public Batiment() {} 
 	
-	public Batiment(String codeB, int anneeC, Campus campus) {
+	public Batiment(String codeB, int anneeConstruction, Campus campus) {
 		super();
 		this.codeB = codeB;
-		this.anneeC = anneeC;
+		this.anneeConstruction = anneeConstruction;
 		this.campus = campus;
 	}
 
@@ -49,12 +49,12 @@ public class Batiment {
 		this.codeB = codeB;
 	}
 
-	public int getAnneeC() {
-		return anneeC;
+	public int getAnneeConstruction() {
+		return anneeConstruction;
 	}
 
-	public void setAnneeC(int anneeC) {
-		this.anneeC = anneeC;
+	public void setAnneeConstruction(int anneeConstruction) {
+		this.anneeConstruction = anneeConstruction;
 	}
 
 	public Campus getCampus() {
@@ -67,7 +67,7 @@ public class Batiment {
 	
 	@Override
 	public String toString() {
-		return "Batiment [codeB=" + codeB  + ", anneeC=" + anneeC + "]";
+		return "Batiment [codeB=" + codeB  + ", anneeC=" + anneeConstruction + "]";
 	}
 	
 }

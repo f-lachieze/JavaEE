@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 @Table(name = "SALLE")
 public class Salle {
 
-    // Clé Primaire (en gras) [cite: 25, 38]
+    // Clé Primaire
     @Id
     @Column(name = "numSalle", unique = true, nullable = false)
     private String numSalle;
@@ -20,19 +20,74 @@ public class Salle {
     @Column(name = "etage")
     private String etage;
 
-    // Utilise l'énumération TypeSalle et la stocke comme String dans la BDD [cite: 27, 61]
+    // TypeSalle (Enum)
     @Enumerated(EnumType.STRING)
     @Column(name = "typeS")
     private TypeSalle typeS;
 
-    // RELATION AVEC BATIMENT : Plusieurs Salles dans Un Batiment (Many-to-One) [cite: 19]
-    // La colonne de clé étrangère 'batiment' est dans la table SALLE [cite: 46, 47]
+    // Relation Many-to-One avec Batiment
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "batiment") // Le nom de la colonne de clé étrangère
-    private Batiment building; // Nom de l'attribut dans l'UML [cite: 17]
+    @JoinColumn(name = "batiment")
+    private Batiment batiment;
 
-    // Constructeur par défaut (requis par JPA) [cite: 62]
+    // Constructeur par défaut (requis par JPA)
     public Salle() {}
 
-    // ... (Ajouter Getters et Setters ici)
+    // ------------------------------------------
+    //             GETTERS et SETTERS
+    // ------------------------------------------
+
+    // numSalle (Clé Primaire)
+    public String getNumSalle() {
+        return numSalle;
+    }
+
+    public void setNumSalle(String numSalle) {
+        this.numSalle = numSalle;
+    }
+
+    // Capacite
+    public int getCapacite() {
+        return capacite;
+    }
+
+    public void setCapacite(int capacite) {
+        this.capacite = capacite;
+    }
+
+    // Accessibilite
+    public String getAccessibilite() {
+        return accessibilite;
+    }
+
+    public void setAccessibilite(String accessibilite) {
+        this.accessibilite = accessibilite;
+    }
+
+    // Etage
+    public String getEtage() {
+        return etage;
+    }
+
+    public void setEtage(String etage) {
+        this.etage = etage;
+    }
+
+    // TypeSalle
+    public TypeSalle getTypeS() {
+        return typeS;
+    }
+
+    public void setTypeS(TypeSalle typeS) {
+        this.typeS = typeS;
+    }
+
+    // Batiment (Relation)
+    public Batiment getBatiment() {
+        return batiment;
+    }
+
+    public void setBatiment(Batiment batiment) {
+        this.batiment = batiment;
+    }
 }
