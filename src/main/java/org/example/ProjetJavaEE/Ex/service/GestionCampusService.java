@@ -27,5 +27,18 @@ public interface GestionCampusService {
     List<Object[]> compterSallesParBatiment();
     List<Object[]> compterSallesByType();
 
-    // ... Ajoutez les autres méthodes du TP2 (Questions 3, 5, 6) ...
+
+    // 5. Calculer le nombre de groupes dans un bâtiment
+    Long calculerNombreGroupesParBatiment(String codeB, int tailleGroupe);
+
+    // 5. Calculer le nombre de groupes dans un campus
+    Long calculerNombreGroupesParCampus(String nomCampus, int tailleGroupe);
+
+    // 6. Calculer le nombre de groupes (Amphi ou TD) dans un bâtiment
+    Long calculerNbGroupesAmphiOuTdParBatiment(String codeB, int tailleGroupe);
+
+    // 6. Calculer le nombre de groupes (Amphi ou TD) sur un campus
+    Long calculerNbGroupesAmphiOuTdParCampus(String nomCampus, int tailleGroupe);
+
+
 }

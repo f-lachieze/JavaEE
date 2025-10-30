@@ -90,8 +90,38 @@ public class GestionCampusServiceImpl implements GestionCampusService {
         return capacite != null ? capacite : 0L;
     }
 
+    // TP2 question 5
+    @Override
+    public Long calculerNombreGroupesParBatiment(String codeB, int tailleGroupe) {
+        Long totalGroupes = salleRepository.sumGroupsByBatiment(codeB, tailleGroupe);
+        // Si la requête ne trouve aucune salle, SUM retourne NULL. On retourne 0 dans ce cas.
+        return totalGroupes != null ? totalGroupes : 0L;
+    }
+
+    @Override
+    public Long calculerNombreGroupesParCampus(String nomCampus, int tailleGroupe) {
+        Long totalGroupes = salleRepository.sumGroupsByCampus(nomCampus, tailleGroupe);
+        return totalGroupes != null ? totalGroupes : 0L;
+    }
+
+    @Override
+    public Long calculerNbGroupesAmphiOuTdParBatiment(String codeB, int tailleGroupe) {
+        List<TypeSalle> typesRecherches = List.of(TypeSalle.AMPHI, TypeSalle.TD);
+        Long totalGroupes = salleRepository.sumGroupsByBatimentAndTypes(codeB, tailleGroupe, typesRecherches);
+        return totalGroupes != null ? totalGroupes : 0L;
+    }
+
+    @Override
+    public Long calculerNbGroupesAmphiOuTdParCampus(String nomCampus, int tailleGroupe) {
+        List<TypeSalle> typesRecherches = List.of(TypeSalle.AMPHI, TypeSalle.TD);
+        Long totalGroupes = salleRepository.sumGroupsByCampusAndTypes(nomCampus, tailleGroupe, typesRecherches);
+        return totalGroupes != null ? totalGroupes : 0L;
+    }
+
+
+
     // ----------------------------------------------------------------------
-    // 5. et 6. Implémentation des méthodes du TP1 (si elles sont dans l'interface)
+    // 5. et 6. Implémentation des méthodes du TP1
     // ----------------------------------------------------------------------
 
     @Override

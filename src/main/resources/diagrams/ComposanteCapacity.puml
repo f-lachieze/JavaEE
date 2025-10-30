@@ -1,0 +1,35 @@
+@startuml
+' --- Configuration de l'affichage ---
+left to right direction
+skinparam packageStyle rectangle
+
+' --- Définition des Acteurs ---
+actor "Gestionnaire (FDS)" as Gest
+database "Base de Données" as BD
+
+' --- Définition du Système et des Cas d'utilisation ---
+rectangle "Service: ComposanteCapacity" {
+  usecase "Gérer les salles de la composante" as (GererSalles)
+
+  usecase "Lister les bâtiments exploités" as (ListerBatiments)
+  usecase "Compter les salles par type (TP, TD...)" as (CompterType)
+  usecase "Calculer la capacité totale d'accueil" as (CalculerCapa)
+  usecase "Identifier les salles accessibles PMR" as (ListerPMR)
+  usecase "Calculer le nombre de groupes" as (CalculerGroupes)
+}
+
+' --- Définition des Relations ---
+
+' L'acteur principal initie la gestion
+Gest --> (GererSalles)
+
+' Le cas de gestion principal inclut les différentes sous-tâches
+(GererSalles) ..> (ListerBatiments) : <<includes>>
+(GererSalles) ..> (CompterType) : <<includes>>
+(GererSalles) ..> (CalculerCapa) : <<includes>>
+(GererSalles) ..> (ListerPMR) : <<includes>>
+(GererSalles) ..> (CalculerGroupes) : <<includes>>
+
+' La gestion des salles dépend de la base de données
+(GererSalles) --> BD
+@enduml

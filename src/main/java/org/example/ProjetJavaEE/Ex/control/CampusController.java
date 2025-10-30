@@ -3,21 +3,15 @@ package org.example.ProjetJavaEE.Ex.control;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import org.example.ProjetJavaEE.Ex.modele.Campus;
-import org.example.ProjetJavaEE.Ex.service.CampusService;
-
-import java.util.List;
-import java.util.Optional;
+import org.example.ProjetJavaEE.Ex.service.impl.CampusServiceImpl;
 
 @Controller
 public class CampusController {
 
 	@Autowired
-	private CampusService cs;
+	private CampusServiceImpl cs;
 
 	@GetMapping("/listeCampus")
 	public String home(	Model model) {

@@ -1,6 +1,8 @@
 package org.example.ProjetJavaEE.Ex.modele;
 
 import jakarta.persistence.*;
+
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -25,7 +27,7 @@ public class Composante {
             joinColumns = @JoinColumn(name = "team"), // Clé de Composante dans la table 'Exploite' [cite: 49]
             inverseJoinColumns = @JoinColumn(name = "building") // Clé de Batiment dans la table 'Exploite' [cite: 49]
     )
-    private Set<Batiment> exploite;
+    private Set<Batiment> exploite = new HashSet<>();
 
     // Constructeur par défaut (requis par JPA) [cite: 62]
     public Composante() {}

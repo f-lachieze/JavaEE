@@ -2,12 +2,15 @@ package org.example.ProjetJavaEE.Ex.modele;
 
 import java.util.Set;
 import jakarta.persistence.*;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import java.util.HashSet; // <-- Assurez-vous que cet import est présent
 
 @Entity
 @Table(name = "BATIMENT")
 public class Batiment {
 
-	// Clé Primaire (déjà présente) [cite: 16, 38]
+	// Clé Primaire (déjà présente)
 	@Id
 	@Column(name = "codeB", unique = true, nullable = false)
 	private String codeB;
@@ -24,7 +27,7 @@ public class Batiment {
 	// 1. Association One-to-Many avec Salle
 	// MappedBy pointe vers l'attribut 'building' dans la classe Salle [cite: 17]
 	@OneToMany(mappedBy = "batiment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-	private Set<Salle> salles;
+    private Set<Salle> salles = new HashSet<>();
 
 	// 2. Association Many-to-Many avec Composante (Inverse de celle dans Composante)
 	// MappedBy pointe vers l'attribut 'exploite' dans la classe Composante
@@ -40,6 +43,13 @@ public class Batiment {
 		this.anneeConstruction = anneeConstruction;
 		this.campus = campus;
 	}
+
+    // ... (vos champs codeB, anneeConstruction, campus)
+
+
+
+// --- FIN DE L'AJOUT ---
+
 
 	public String getCodeB() {
 		return codeB;
@@ -69,5 +79,13 @@ public class Batiment {
 	public String toString() {
 		return "Batiment [codeB=" + codeB  + ", anneeC=" + anneeConstruction + "]";
 	}
+
+    public Set<Salle> getSalles() {
+        return salles;
+    }
+
+    public void setSalles(Set<Salle> salles) {
+        this.salles = salles;
+    }
 	
 }

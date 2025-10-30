@@ -2,6 +2,8 @@ package org.example.ProjetJavaEE.Ex.modele;
 
 import jakarta.persistence.*;
 
+import java.util.Set;
+
 @Entity
 @Table(name = "SALLE")
 public class Salle {
@@ -77,6 +79,8 @@ public class Salle {
     public TypeSalle getTypeS() {
         return typeS;
     }
+
+
 
     public void setTypeS(TypeSalle typeS) {
         this.typeS = typeS;

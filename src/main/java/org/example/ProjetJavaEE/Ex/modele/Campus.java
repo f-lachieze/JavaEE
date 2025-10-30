@@ -15,7 +15,14 @@ public class Campus {
 	
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="campus", cascade = CascadeType.REMOVE)
 	private List<Batiment> batiments = new ArrayList<Batiment>();
-	
+
+    // Relation N-1 : Plusieurs campus appartiennent à une université
+    // C'est l'entité "propriétaire" de la relation
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "universite_acronyme", nullable = false) // 'nullable = false' signifie qu'un campus DOIT avoir une université
+    private Universite universite;
+
+
 	public Campus() {
 	}
 	
@@ -46,6 +53,14 @@ public class Campus {
 	public void setBatiments(List<Batiment> batiments) {
 		this.batiments = batiments;
 	}
+
+    public Universite getUniversite() {
+        return universite;
+    }
+
+    public void setUniversite(Universite universite) {
+        this.universite = universite;
+    }
 
 	@Override
 	public String toString() {

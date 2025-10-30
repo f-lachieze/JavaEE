@@ -70,4 +70,36 @@ public interface SalleRepository extends JpaRepository<Salle, String> {
     // TP2 - Question 4: Calcule la capacité totale d'un campus
     @Query("SELECT SUM(s.capacite) FROM Salle s JOIN s.batiment b JOIN b.campus c WHERE c.nomC = :nomCampus")
     Long sumCapaciteByCampus(@Param("nomCampus") String nomCampus);
+
+
+    /**
+     * (TP2 - Q5) Calcule le nombre total de groupes d'une taille donnée
+     * pouvant être accueillis dans un bâtiment spécifique.
+     */
+    @Query("SELECT SUM(s.capacite / :tailleGroupe) FROM Salle s WHERE s.batiment.codeB = :codeB")
+    Long sumGroupsByBatiment(@Param("codeB") String codeB, @Param("tailleGroupe") int tailleGroupe);
+
+
+    /**
+     * (TP2 - Q5) Calcule le nombre total de groupes d'une taille donnée
+     * pouvant être accueillis sur un campus spécifique.
+     */
+    @Query("SELECT SUM(s.capacite / :tailleGroupe) FROM Salle s JOIN s.batiment b WHERE b.campus.nomC = :nomCampus")
+    Long sumGroupsByCampus(@Param("nomCampus") String nomCampus, @Param("tailleGroupe") int tailleGroupe);
+
+
+    /**
+     * (TP2 - Q6) Calcule le nombre de groupes pour une liste de types de salles
+     * dans un bâtiment donné.
+     */
+    @Query("SELECT SUM(s.capacite / :tailleGroupe) FROM Salle s WHERE s.batiment.codeB = :codeB AND s.typeS IN :types")
+    Long sumGroupsByBatimentAndTypes(@Param("codeB") String codeB, @Param("tailleGroupe") int tailleGroupe, @Param("types") List<TypeSalle> types);
+
+    /**
+     * (TP2 - Q6) Calcule le nombre de groupes pour une liste de types de salles
+     * sur un campus donné.
+     */
+    @Query("SELECT SUM(s.capacite / :tailleGroupe) FROM Salle s JOIN s.batiment b WHERE b.campus.nomC = :nomCampus AND s.typeS IN :types")
+    Long sumGroupsByCampusAndTypes(@Param("nomCampus") String nomCampus, @Param("tailleGroupe") int tailleGroupe, @Param("types") List<TypeSalle> types);
+
 }

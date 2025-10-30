@@ -2,8 +2,10 @@ package org.example.ProjetJavaEE.Ex;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import org.example.ProjetJavaEE.Ex.service.GestionCampusService;
+import org.example.ProjetJavaEE.Ex.service.IGestionComposanteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
@@ -17,21 +19,29 @@ import org.example.ProjetJavaEE.Ex.modele.* ;
 @SpringBootApplication
 public class CL_Appli implements CommandLineRunner {
 		 @Autowired
-		 private BatimentRepository br;
+		 private BatimentRepository batimentRepository;
 		 @Autowired
-		 private CampusRepository cr;
+		 private CampusRepository campusRepository;
 
 		 @Autowired
-		 private SalleRepository sr;
+		 private SalleRepository salleRepository;
+
 
 		 @Autowired
-		 private ComposanteRepository cmpr;
+		 private ComposanteRepository composanteRepository;
+
+    @Autowired
+    private IGestionComposanteService gestionComposanteService;
 
 	// ... Injections des Repositories ...
 
 	// NOUVEAU : Injection du Service
+	// le bean de l'interface Gesttion campus service
 	@Autowired
 	private GestionCampusService gcs; // gcs pour GestionCampusService
+
+    @Autowired
+    private UniversiteRepository universiteRepository;
 
 
 
@@ -40,14 +50,151 @@ public class CL_Appli implements CommandLineRunner {
 		}
 		
 	public void run(String... args) throws Exception {
-		tsLesBatiments();
+
+        System.out.println("\n=======================================================");
+        System.out.println("--- Démarrage de la Création des Données (Exercices 2 & 3) ---");
+        System.out.println("=======================================================");
+
+        // --- 1. Création des Universités ---
+
+        // Création de l'Université de Montpellier (UM)
+        Universite um = universiteRepository.findById("UM").orElseGet(() -> {
+            Universite newUm = new Universite();
+            newUm.setAcronyme("UM");
+            newUm.setNom("Université de Montpellier");
+            newUm.setCreation(2015);
+            newUm.setPresidence("Philippe Augé");
+            System.out.println("-> CRÉATION Université : UM");
+            return universiteRepository.saveAndFlush(newUm);
+        });
+
+        // Création de l'Université Paul Valéry (UPVD)
+        Universite upvd = universiteRepository.findById("UPVD").orElseGet(() -> {
+            Universite newUpvd = new Universite();
+            newUpvd.setAcronyme("UPVD");
+            newUpvd.setNom("Université Paul Valéry");
+            System.out.println("-> CRÉATION Université : UPVD");
+            return universiteRepository.saveAndFlush(newUpvd);
+        });
+
+        // --- 2. Création des Campus et Bâtiments ---
+
+        // Création du Campus FDE Nimes (lié à l'UM)
+        Campus fdeNimes = campusRepository.findById("FDE Nimes").orElseGet(() -> {
+            Campus newCampus = new Campus();
+            newCampus.setNomC("FDE Nimes");
+            newCampus.setVille("Nîmes");
+            newCampus.setUniversite(um); // <-- LIAISON OBLIGATOIRE
+            System.out.println("-> CRÉATION Campus : FDE Nimes (lié à UM)");
+            return campusRepository.saveAndFlush(newCampus);
+        });
+
+        // Création du Bâtiment "bt1 nimes" (lié à FDE Nimes)
+        Batiment bt1Nimes = batimentRepository.findById("bt1 nimes").orElseGet(() -> {
+            Batiment newBatiment = new Batiment();
+            newBatiment.setCodeB("bt1 nimes");
+            newBatiment.setAnneeConstruction(2024);
+            newBatiment.setCampus(fdeNimes); // Liaison au campus
+            System.out.println("-> CRÉATION Bâtiment : bt1 nimes (lié à FDE Nimes)");
+            return batimentRepository.saveAndFlush(newBatiment);
+        });
+
+        // Création du Campus Paul Valéry (lié à UPVD)
+        Campus campusPaulValery = campusRepository.findById("Paul Valéry Campus").orElseGet(() -> {
+            Campus newCampus = new Campus();
+            newCampus.setNomC("Paul Valéry Campus");
+            newCampus.setVille("Montpellier");
+            newCampus.setUniversite(upvd); // <-- LIAISON OBLIGATOIRE
+            System.out.println("-> CRÉATION Campus : Paul Valéry Campus (lié à UPVD)");
+            return campusRepository.saveAndFlush(newCampus);
+        });
+
+        // Création du Bâtiment "Elearning Center" (lié à Paul Valéry)
+        batimentRepository.findById("Elearning Center").orElseGet(() -> {
+            Batiment newBatiment = new Batiment();
+            newBatiment.setCodeB("Elearning Center");
+            newBatiment.setAnneeConstruction(2020);
+            newBatiment.setCampus(campusPaulValery); // Liaison au campus
+            System.out.println("-> CRÉATION Bâtiment : Elearning Center (lié à Paul Valéry Campus)");
+            return batimentRepository.saveAndFlush(newBatiment);
+        });
+
+
+        // --- 3. Création des Salles (liées à "bt1 nimes") ---
+
+        // Nous avons besoin de la vraie instance de bt1Nimes pour la mettre à jour
+        Batiment batimentPourSalles = batimentRepository.findById("bt1 nimes").get();
+
+        salleRepository.findById("A01").orElseGet(() -> {
+            Salle newSalle = new Salle();
+            newSalle.setNumSalle("A01");
+            newSalle.setCapacite(200);
+            newSalle.setTypeS(TypeSalle.AMPHI);
+
+            // --- MISE À JOUR DES DEUX CÔTÉS ---
+            newSalle.setBatiment(batimentPourSalles); // 1. Côté Salle
+            batimentPourSalles.getSalles().add(newSalle); // 2. Côté Batiment
+            // --- FIN DE LA MODIFICATION ---
+
+            System.out.println("-> CRÉATION Salle : A01");
+
+            return newSalle;
+            // Pas besoin de sauvegarder le bâtiment, 'cascade' s'en charge.
+        });
+
+        salleRepository.findById("TP101").orElseGet(() -> {
+            Salle newSalle = new Salle();
+            newSalle.setNumSalle("TP101");
+            newSalle.setCapacite(30);
+            newSalle.setTypeS(TypeSalle.TP);
+
+            // --- MISE À JOUR DES DEUX CÔTÉS ---
+            newSalle.setBatiment(batimentPourSalles); // 1. Côté Salle
+            batimentPourSalles.getSalles().add(newSalle); // 2. Côté Batiment
+            // --- FIN DE LA MODIFICATION ---
+
+            System.out.println("-> CRÉATION Salle : TP101");
+            return newSalle;
+        });
+
+        // MAINTENANT on sauvegarde le parent.
+        // La cascade va automatiquement sauvegarder A01 et TP101.
+        batimentRepository.saveAndFlush(batimentPourSalles);
+
+        // Il est plus sûr de sauvegarder le bâtiment après les ajouts
+        // pour que la session Hibernate soit 100% à jour.
+        batimentRepository.saveAndFlush(batimentPourSalles);
+
+        // ... (fin du test du cas d'utilisation 1)
+
+        // --- TEST DU CAS D'UTILISATION 2 ---
+        System.out.println("\n-> 2. Comptage des salles exploitées par 'FDS' (par type) :");
+        List<Object[]> comptageParType = gestionComposanteService.compterSallesExploiteesParType("FDS");
+
+        if (comptageParType.isEmpty()) {
+            System.out.println("Aucune salle exploitée trouvée pour cette composante.");
+        } else {
+            comptageParType.forEach(resultat ->
+                    System.out.println("- Type: " + resultat[0] + " | Nombre: " + resultat[1])
+            );
+        }
+
+
+
+
+
+
+
+
+
+        tsLesBatiments();
 		campusParVille("Montpellier");
 		List<String> codes = new ArrayList<String>();
 		codes.add("triolet_b36");
 		codes.add("triolet_b16");
 		certainsBatiments(codes);
 		testSallesSpeciales();
-		creationEtAssociationNimes();
+
 
 		System.out.println("\n--- Démarrage de l'Exercice 2 du TP1 (Méthodes Repository) ---");
 
@@ -76,12 +223,50 @@ public class CL_Appli implements CommandLineRunner {
 		// TP2 Q4.
 		tsCapaciteTotale();
 
+		// TP2 Q5
+		System.out.println("\n-> TP2, Q5. Nombre de groupes de 30 étudiants :");
+
+		// Test pour un bâtiment
+		String codeBatiment = "bt1 nimes";
+		Long groupesBatiment = gcs.calculerNombreGroupesParBatiment(codeBatiment, 30);
+		System.out.println("Bâtiment '" + codeBatiment + "' peut accueillir " + groupesBatiment + " groupes.");
+
+		// Test pour un campus
+		String nomCampus = "FDE Nimes";
+		Long groupesCampus = gcs.calculerNombreGroupesParCampus(nomCampus, 30);
+		System.out.println("Campus '" + nomCampus + "' peut accueillir " + groupesCampus + " groupes.");
+
+		// TP2 Q6
+
+		System.out.println("\n-> TP2 Q6. Nombre de groupes (Amphi ou TD) pour une taille de 25 :");
+
+		// Test pour un bâtiment
+		String codeBatimentQ6 = "bt1 nimes"; // <-- Changement de nom
+		Long groupesBatimentQ6 = gcs.calculerNbGroupesAmphiOuTdParBatiment(codeBatimentQ6, 25); // <-- Changement de nom
+		System.out.println("Bâtiment '" + codeBatimentQ6 + "' peut accueillir " + groupesBatimentQ6 + " groupes dans ses amphis/salles de cours.");
+
+		// Test pour un campus
+		String nomCampusQ6 = "FDE Nimes"; // <-- Changement de nom
+		Long groupesCampusQ6 = gcs.calculerNbGroupesAmphiOuTdParCampus(nomCampusQ6, 25); // <-- Changement de nom
+		System.out.println("Campus '" + nomCampusQ6 + "' peut accueillir " + groupesCampusQ6 + " groupes dans ses amphis/salles de cours.");
+
 		// ... autres appels pour le TP2 ...
+
+        // ... fin des tests de l'Exercice 1
+
+
 	}
+
+
+
+
+
+
+
 	
 	
 	public void tsLesBatiments()
-	{  Iterable<Batiment> e = br.findAll();
+	{  Iterable<Batiment> e = batimentRepository.findAll();
 	  System.out.println("La liste des batiments");
       if (e != null) { 
    	   for (Batiment b : e)
@@ -90,7 +275,7 @@ public class CL_Appli implements CommandLineRunner {
 	} 
 	
 	public void campusParVille(String ville)
-	{  Iterable<Campus> e = cr.findByVille(ville);
+	{  Iterable<Campus> e = campusRepository.findByVille(ville);
 	  System.out.println("La liste des campus de "+ville);
       if (e != null) { 
    	   for (Campus c : e)
@@ -99,7 +284,7 @@ public class CL_Appli implements CommandLineRunner {
 	} 
 	
 	public void certainsBatiments(List<String> codes)
-	{  Iterable<Batiment> e = br.findByIds(codes);
+	{  Iterable<Batiment> e = batimentRepository.findByIds(codes);
 	  System.out.println("La liste de certains batiments");
       if (e != null) { 
    	   for (Batiment b : e)
@@ -115,14 +300,14 @@ public class CL_Appli implements CommandLineRunner {
 
 		// Point 2 : Salle de TD dans le bâtiment b36
 		List<Salle> sallesTD_B36 = // Dans CL_Appli.java, mettez à jour la ligne d'appel
-				sr.findByTypeSEqualsAndBatiment_CodeB(TypeSalle.TD, "b36");
+                salleRepository.findByTypeSEqualsAndBatiment_CodeB(TypeSalle.TD, "b36");
 		System.out.println("Salles TD dans " + codeB_test + ": " + sallesTD_B36.size());
 		for (Salle s : sallesTD_B36) {
 			System.out.println("\t[TD] " + s.getNumSalle() + " - Capacité: " + s.getCapacite());
 		}
 
 		// Point 3 : Toutes les salles du bâtiment b36
-		List<Salle> toutesSalles_B36 = sr.findByBatiment_CodeB("b36");
+		List<Salle> toutesSalles_B36 = salleRepository.findByBatiment_CodeB("b36");
 		System.out.println("Toutes Salles dans " + codeB_test + ": " + toutesSalles_B36.size());
 		// ...
 		}
@@ -136,7 +321,7 @@ public class CL_Appli implements CommandLineRunner {
 		// Modifiez la requête findTDSallesInB36 dans SalleRepository pour utiliser 'bt1 nimes' si vous voulez voir les données insérées :
 		// @Query("SELECT s FROM Salle s WHERE s.types = 'TD' AND s.batiment.codeB = 'bt1 nimes'")
 
-		List<Salle> salles = sr.findTDSallesInB36();
+		List<Salle> salles = salleRepository.findTDSallesInB36();
 		if (salles.isEmpty()) {
 			System.out.println("Aucune salle trouvée.");
 		} else {
@@ -147,14 +332,14 @@ public class CL_Appli implements CommandLineRunner {
 	// --- Exemple de méthode de test 3 ---
 	public void tslesSallesParBatiment(String codeB) {
 		System.out.println("\n-> 3. Salles du bâtiment " + codeB + ":");
-		List<Salle> salles = sr.findByBatimentCodeB(codeB);
+		List<Salle> salles = salleRepository.findByBatimentCodeB(codeB);
 		salles.forEach(salle -> System.out.println(salle.getNumSalle() + " - Capacité: " + salle.getCapacite()));
 	}
 
 	// --- Exemple de méthode de test 5 ---
 	public void tsComptageParBatiment() {
 		System.out.println("\n-> 5. Comptage des salles par bâtiment:");
-		List<Object[]> resultats = sr.countSallesByBatiment();
+		List<Object[]> resultats = salleRepository.countSallesByBatiment();
 		for (Object[] resultat : resultats) {
 			System.out.println("Bâtiment: " + resultat[0] + " | Nombre de salles: " + resultat[1]);
 		}
@@ -174,7 +359,7 @@ public class CL_Appli implements CommandLineRunner {
 		nimesCampus.setVille("Nimes");
 
 		// Utiliser saveAndFlush pour s'assurer que l'objet est bien en base immédiatement
-		nimesCampus = cr.saveAndFlush(nimesCampus);
+		nimesCampus = campusRepository.saveAndFlush(nimesCampus);
 		System.out.println("-> 1. Campus créé : " + nimesCampus.getNomC());
 
 		// 1.2 Créer un nouveau Bâtiment : 'bt1 nimes', 2024
@@ -186,14 +371,14 @@ public class CL_Appli implements CommandLineRunner {
 		nimesBatiment.setCampus(nimesCampus);
 
 		// Sauvegarder le Bâtiment
-		nimesBatiment = br.saveAndFlush(nimesBatiment);
+		nimesBatiment = batimentRepository.saveAndFlush(nimesBatiment);
 		System.out.println("-> 2. Bâtiment créé et associé au Campus : " + nimesBatiment.getCodeB());
 
 		// --- 2. Ajouter deux Salles associées au Bâtiment ---
 
 		// Récupérer une référence au Batiment (comme demandé par l'énoncé)
 		// Bien que 'nimesBatiment' soit déjà l'objet sauvé, ceci démontre l'utilisation de getReferenceById
-		Batiment batimentReference = br.getReferenceById("bt1 nimes");
+		Batiment batimentReference = batimentRepository.getReferenceById("bt1 nimes");
 
 		// 2.1 Créer la première Salle : un Amphi
 		Salle amphiNimes = new Salle();
@@ -205,7 +390,7 @@ public class CL_Appli implements CommandLineRunner {
 
 		// Associer la Salle au Bâtiment de référence
 		amphiNimes.setBatiment(batimentReference);
-		sr.save(amphiNimes);
+        salleRepository.saveAndFlush(amphiNimes);
 
 		// 2.2 Créer la deuxième Salle : une salle de TP
 		Salle tpNimes = new Salle();
@@ -217,7 +402,7 @@ public class CL_Appli implements CommandLineRunner {
 
 		// Associer la Salle au Bâtiment de référence
 		tpNimes.setBatiment(batimentReference);
-		sr.save(tpNimes);
+        salleRepository.saveAndFlush(tpNimes);
 
 		System.out.println("-> 3. Deux Salles (A01 et TP101) ajoutées et associées au bâtiment 'bt1 nimes'.");
 	}
@@ -317,6 +502,11 @@ public class CL_Appli implements CommandLineRunner {
 		Long capCampus = gcs.calculerCapaciteTotaleCampus(nomCampus);
 		System.out.println("Capacité totale : " + capCampus + " places.");
 	}
+
+
+
+
+
 
 
 
