@@ -29,10 +29,10 @@ public class Batiment {
 	@OneToMany(mappedBy = "batiment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Salle> salles = new HashSet<>();
 
-	// 2. Association Many-to-Many avec Composante (Inverse de celle dans Composante)
-	// MappedBy pointe vers l'attribut 'exploite' dans la classe Composante
-	@ManyToMany(mappedBy = "exploite")
-	private Set<Composante> teams; // Nom 'team' tiré de l'UML [cite: 14]
+    // 2. Association One-to-Many avec Exploite
+// 'mappedBy' pointe vers l'attribut 'batiment' dans la classe Exploite
+    @OneToMany(mappedBy = "batiment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private Set<Exploite> exploitations = new HashSet<>();
 
 	// Constructeur par défaut (requis)
 	public Batiment() {} 
@@ -86,6 +86,16 @@ public class Batiment {
 
     public void setSalles(Set<Salle> salles) {
         this.salles = salles;
+    }
+
+    // --- NOUVEAU GETTER/SETTER pour la collection de liaison ---
+
+    public Set<Exploite> getExploitations() {
+        return exploitations;
+    }
+
+    public void setExploitations(Set<Exploite> exploitations) {
+        this.exploitations = exploitations;
     }
 	
 }

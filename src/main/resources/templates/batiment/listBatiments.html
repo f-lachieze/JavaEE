@@ -29,7 +29,12 @@
         <td th:text="${batiment.codeB}">codeB</td>
         <td th:text="${batiment.anneeConstruction}">année</td>
 
-        <td>Exploité(s) - A IMPLÉMENTER</td>
+        <td>
+            <span th:each="exploit : ${batiment.exploitations}">
+                <span th:text="${exploit.composante.acronyme}">FDS</span>
+                <span>, </span>
+            </span>
+        </td>
 
         <td>
             <a th:href="@{/salle/list(batimentId=${batiment.codeB})}">Voir Salles</a>
