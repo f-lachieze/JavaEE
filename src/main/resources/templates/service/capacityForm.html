@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculs de Capacité et Groupes</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .result { margin-top: 15px; padding: 10px; border: 1px solid #007bff; background-color: #e6f7ff; }
+        select, input[type="number"] { padding: 8px; margin-right: 10px; }
+        .error { color: red; font-weight: bold; }
+    </style>
+</head>
+
+<body>
+
+<a th:href="@{/}" style="display: block; margin-bottom: 20px;">
+    ← Retour à la Page d'Accueil
+</a>
+
+<h1>Calculs de Logique Métier (TP2 - Q5 & Q6)</h1>
+<hr/>
+
+<p class="error" th:if="${errorMessage}" th:text="${errorMessage}">Message d'erreur ici.</p>
+
+<form th:action="@{/service/calculate}" method="post">
+
+    <div>
+        <label for="tailleGroupe">Taille du Groupe :</label>
+        <input type="number" id="tailleGroupe" name="tailleGroupe" th:value="${tailleGroupe}" min="1" required>
+    </div>
+    <br/>
+
+    <div>
+        <h2>Cible du Calcul :</h2>
+
+        <input type="radio" id="targetBatiment" name="targetType" value="batiment" checked>
+        <label for="targetBatiment">Bâtiment :</label>
+        <select name="batimentId"> <option value="">-- Choisir un Bâtiment --</option>
+            <option th:each="batiment : ${allBatiments}"
+                    th:value="${batiment.codeB}"
+                    th:text="${batiment.codeB} + ' (' + ${batiment.campus.nomC} + ')'"
+                    th:selected="${batiment.codeB == targetLabel?.replace('Bâtiment: ', '')}">Bâtiment ID</option>
+        </select>
+
+        <br/><br/>
+
+        <input type="radio" id="targetCampus" name="targetType" value="campus">
+        <label for="targetCampus">Campus :</label>
+        <select name="campusId"> <option value="">-- Choisir un Campus --</option>
+            <option th:each="campus : ${allCampus}"
+                    th:value="${campus.nomC}"
+                    th:text="${campus.nomC} + ' (' + ${campus.ville} + ')'"
+                    th:selected="${campus.nomC == targetLabel?.replace('Campus: ', '')}">Campus Nom</option>
+        </select>
+    </div>
+    <br/>
+
+    <button type="submit">Calculer la Capacité en Groupes</button>
+</form>
+
+<hr/>
+
+<div th:if="${resultQ5Batiment != null or resultQ5Campus != null}">
+    <h2 th:text="'Résultats pour ' + ${targetLabel}">Résultats des Calculs</h2>
+
+    <div class="result">
+        <strong>Q5. Capacité Totale Groupes (Toutes Salles) :</strong>
+        <p th:if="${resultQ5Batiment != null}">
+            Bâtiment : <span th:text="${resultQ5Batiment}">0</span> groupes de <span th:text="${tailleGroupe}">30</span>.
+        </p>
+        <p th:if="${resultQ5Campus != null}">
+            Campus : <span th:text="${resultQ5Campus}">0</span> groupes de <span th:text="${tailleGroupe}">30</span>.
+        </p>
+    </div>
+
+    <div class="result">
+        <strong>Q6. Groupes (Amphi / Salles de Cours uniquement) :</strong>
+        <p th:if="${resultQ6Batiment != null}">
+            Bâtiment : <span th:text="${resultQ6Batiment}">0</span> groupes de <span th:text="${tailleGroupe}">25</span>.
+        </p>
+        <p th:if="${resultQ6Campus != null}">
+            Campus : <span th:text="${resultQ6Campus}">0</span> groupes de <span th:text="${tailleGroupe}">25</span>.
+        </p>
+    </div>
+</div>
+</body>
+</html>

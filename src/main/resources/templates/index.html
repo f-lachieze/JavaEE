@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestion des Campus - Accueil</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f7f6; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        ul { list-style: none; padding: 0; }
+        li { margin-bottom: 10px; font-size: 1.1em; }
+        a { text-decoration: none; color: #28a745; font-weight: bold; }
+        a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Campus Manager (Université de Montpellier)</h1>
+
+    <p>Bienvenue sur l'interface de gestion des campus, des bâtiments et des salles, développée en Spring Boot (Jakarta EE / JPA).</p>
+    <p>Ce projet couvre les exigences des TP1 et TP2, y compris les services métier complexes et la couche de présentation Thymeleaf.</p>
+
+    <hr/>
+
+    <h2>🔎 Navigation & Consultation des Données</h2>
+    <ul>
+        <li>
+            <a th:href="@{/campus/list}">Consulter la Liste des Campus et des Bâtiments</a>
+            (Accès lecture de base)
+        </li>
+
+        <li>
+            <a th:href="@{/service/capacity}">Calculs de Capacité et Nombre de Groupes (Q4, Q5, Q6 TP2)</a>
+            (Logique métier)
+        </li>
+
+        <li>
+            <a th:href="@{/salle/new(batimentId='triolet_b36')}">Ajouter une Nouvelle Salle (CRUD - Exemple)</a>
+        </li>
+    </ul>
+
+    <hr/>
+
+    <h2>🛠️ Architecture du Projet</h2>
+    <p>L'application respecte l'architecture en couches :</p>
+    <ul>
+        <li>**Couche Persistance** : Entités JPA (Hibernate) & Repositories.</li>
+        <li>**Couche Métier** : Composants Service (GestionCampusService).</li>
+        <li>**Couche Contrôle/Présentation** : Contrôleurs Spring MVC & Vues Thymeleaf.</li>
+    </ul>
+</div>
+</body>
+</html>
