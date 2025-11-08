@@ -93,8 +93,12 @@ public class GestionCampusServiceImpl implements GestionCampusService {
     }
 
     @Override
+    @Transactional(readOnly = true)
     public Long calculerCapaciteTotaleCampus(String nomCampus) {
-        Long capacite = salleRepository.sumCapaciteByCampus(nomCampus);
+
+        Long capacite = salleRepository.calculerCapaciteTotaleParCampus(nomCampus);
+
+        // Retourne la capacité trouvée, ou 0 si le résultat était null (pas de salle/bâtiment).
         return capacite != null ? capacite : 0L;
     }
 

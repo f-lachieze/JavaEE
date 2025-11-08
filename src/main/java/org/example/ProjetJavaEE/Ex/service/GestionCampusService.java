@@ -51,4 +51,6 @@ public interface GestionCampusService {
     /** Retourne un bâtiment par son code, chargé avec ses salles */
     Batiment findBatimentWithSalles(String codeBatiment);
 
+
+
 }

@@ -42,11 +42,16 @@ public class BatimentController {
                 capaciteParBatiment.put(batiment.getCodeB(), capacite);
             }
 
+            // NOUVEAU : Calculer la Capacité Totale du Campus
+            Long capaciteCampus = gcs.calculerCapaciteTotaleCampus(nomCampus);
+
             // 2. Ajout des données au Modèle
             model.addAttribute("campus", campus); // Ajout du campus complet
             model.addAttribute("batimentList", campus.getBatiments()); // Ajout des bâtiments pour la boucle
             model.addAttribute("capaciteMap", capaciteParBatiment);
 
+            // NOUVEAU : Ajouter la capacité totale du campus au modèle
+            model.addAttribute("totalCampusCapacity", capaciteCampus);
             // 3. Retourne le nom du template
             return "batiment/listBatiments";
 

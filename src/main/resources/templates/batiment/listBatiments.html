@@ -14,6 +14,10 @@
 <a th:href="@{/campus/list}">Retour à la liste des Campus</a>
 
 <h2 th:text="'Bâtiments du Campus ' + ${campus.nomC} + ' (' + ${campus.ville} + ')'">Bâtiments du Campus</h2>
+<p>
+    <strong>Capacité Totale du Campus: </strong>
+    <span th:text="${totalCampusCapacity} + ' places assises'">0 places assises</span>
+</p>
 
 <table>
     <thead>

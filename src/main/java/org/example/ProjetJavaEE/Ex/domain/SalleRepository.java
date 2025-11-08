@@ -111,4 +111,11 @@ public interface SalleRepository extends JpaRepository<Salle, String> {
     Long calculerCapaciteTotaleParBatiment(@Param("codeBatiment") String codeBatiment);
 
 
+    /** * Calcule la somme des capacités des salles (capacité totale) pour un campus donné.
+     */
+    @Query("SELECT SUM(s.capacite) FROM Salle s JOIN s.batiment b WHERE b.campus.nomC = :nomCampus")
+    Long calculerCapaciteTotaleParCampus(@Param("nomCampus") String nomCampus);
+
+
+
 }
