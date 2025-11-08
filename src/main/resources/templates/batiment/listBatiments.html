@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Bâtiments du Campus - [[${campus.nomC}]]</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 80%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+<a th:href="@{/campus/list}">Retour à la liste des Campus</a>
+
+<h2 th:text="'Bâtiments du Campus ' + ${campus.nomC} + ' (' + ${campus.ville} + ')'">Bâtiments du Campus</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>Code Bâtiment</th>
+        <th>Année de Construction</th>
+        <th>Exploité par Composante(s)</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="batiment : ${batimentList}">
+        <td th:text="${batiment.codeB}">codeB</td>
+        <td th:text="${batiment.anneeConstruction}">année</td>
+
+        <td>Exploité(s) - A IMPLÉMENTER</td>
+
+        <td>
+            <a th:href="@{/salle/list(batimentId=${batiment.codeB})}">Voir Salles</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p th:if="${batimentList.empty}" th:text="'Le Campus ' + ${campus.nomC} + ' n\'a pas de bâtiments enregistrés.'">
+    Aucun bâtiment.
+</p>
+</body>
+</html>

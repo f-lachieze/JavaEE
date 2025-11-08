@@ -8,13 +8,16 @@ import jakarta.persistence.*;
 @Entity
 public class Campus {
 	
-	@Id
+	@Id // la clé primaire de l'entité
 	private String nomC;
 	
 	private String ville;
-	
+
+    // un campus peut contenir plusieurs batiments
 	@OneToMany(fetch = FetchType.LAZY, mappedBy="campus", cascade = CascadeType.REMOVE)
 	private List<Batiment> batiments = new ArrayList<Batiment>();
+
+
 
     // Relation N-1 : Plusieurs campus appartiennent à une université
     // C'est l'entité "propriétaire" de la relation
@@ -25,13 +28,13 @@ public class Campus {
 
 	public Campus() {
 	}
-	
-	public Campus(String nomC, String ville) {
-		super();
-		this.nomC = nomC;
-		this.ville = ville;
-		this.batiments = new ArrayList<Batiment>();
-	}
+
+    public Campus(String nomC, String ville, Universite universite) {
+        this.nomC = nomC;
+        this.ville = ville;
+        this.universite = universite; // Initialisation du champ obligatoire
+        this.batiments = new ArrayList<Batiment>();
+    }
 	
 	public String getNomC() {
 		return nomC;

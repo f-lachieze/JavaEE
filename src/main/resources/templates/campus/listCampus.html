@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des Campus - UM</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 60%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+<h2>Campus de l'Université de Montpellier (et autres)</h2>
+
+<p>Cette liste permet au Gestionnaire de consulter la base de données au sujet des campus.</p>
+
+<table>
+    <thead>
+    <tr>
+        <th>Nom du Campus</th>
+        <th>Ville</th>
+        <th>Université</th>
+        <th>Actions</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="campus : ${campusList}">
+        <td th:text="${campus.nomC}">Nom Campus</td>
+        <td th:text="${campus.ville}">Ville Campus</td>
+        <td th:text="${campus.universite.acronyme}">Acronyme Univ</td>
+
+        <td>
+            <a th:href="@{/batiment/list(campusId=${campus.nomC})}">Voir Bâtiments</a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p th:if="${campusList.empty}">Aucun campus n'a été trouvé dans la base de données.</p>
+
+<br/>
+<a href="/">Retour à l'accueil</a>
+</body>
+</html>

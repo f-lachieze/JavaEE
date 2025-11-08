@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Erreur - Ressource Introuvable</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; margin-top: 50px; }
+        h1 { color: #cc0000; }
+    </style>
+</head>
+<body>
+<h1>Erreur de Traitement</h1>
+<p>Une ressource demandée n'a pas pu être trouvée ou traitée correctement.</p>
+
+<p th:if="${errorMessage}" th:text="'Détail : ' + ${errorMessage}">Détail de l'erreur.</p>
+
+<a th:href="@{/campus/list}">Retour à la liste des Campus</a>
+</body>
+</html>

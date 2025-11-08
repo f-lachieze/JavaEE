@@ -21,16 +21,25 @@ public class Composante {
     private String responsable;
 
     // RELATION AVEC BATIMENT : Many-to-Many via la table d'association 'Exploite' [cite: 6, 48]
+    // Dans Composante.java (Votre code actuel)
     @ManyToMany
     @JoinTable(
-            name = "EXPLOITE", // Nom de la table d'association [cite: 48]
-            joinColumns = @JoinColumn(name = "team"), // Clé de Composante dans la table 'Exploite' [cite: 49]
-            inverseJoinColumns = @JoinColumn(name = "building") // Clé de Batiment dans la table 'Exploite' [cite: 49]
+            name = "EXPLOITE",
+            joinColumns = @JoinColumn(name = "team"),
+            inverseJoinColumns = @JoinColumn(name = "building")
     )
     private Set<Batiment> exploite = new HashSet<>();
 
     // Constructeur par défaut (requis par JPA) [cite: 62]
     public Composante() {}
+
+    // Dans Composante.java (à ajouter)
+
+    public Composante(String acronyme, String nom, String responsable) {
+        this.acronyme = acronyme;
+        this.nom = nom;
+        this.responsable = responsable;
+    }
 
 
 // --- GETTERS et SETTERS ---

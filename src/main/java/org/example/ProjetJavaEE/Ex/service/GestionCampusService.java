@@ -1,5 +1,6 @@
 package org.example.ProjetJavaEE.Ex.service;
 
+import org.example.ProjetJavaEE.Ex.modele.Campus;
 import org.example.ProjetJavaEE.Ex.modele.Salle;
 
 import java.util.List;
@@ -40,5 +41,10 @@ public interface GestionCampusService {
     // 6. Calculer le nombre de groupes (Amphi ou TD) sur un campus
     Long calculerNbGroupesAmphiOuTdParCampus(String nomCampus, int tailleGroupe);
 
+    // Déclaration de la méthode pour obtenir tous les campus
+    List<Campus> findAllCampus();
+
+    /** Retourne un campus par son nom, chargé avec ses bâtiments */
+    Campus findCampusWithBatiments(String nomCampus);
 
 }

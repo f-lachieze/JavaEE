@@ -1,13 +1,16 @@
 package org.example.ProjetJavaEE.Ex.service.impl;
 
 import org.example.ProjetJavaEE.Ex.domain.BatimentRepository;
+import org.example.ProjetJavaEE.Ex.domain.CampusRepository;
 import org.example.ProjetJavaEE.Ex.domain.SalleRepository;
+import org.example.ProjetJavaEE.Ex.modele.Campus;
 import org.example.ProjetJavaEE.Ex.modele.Salle;
 import org.example.ProjetJavaEE.Ex.service.GestionCampusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 import org.example.ProjetJavaEE.Ex.modele.TypeSalle;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class GestionCampusServiceImpl implements GestionCampusService {
@@ -18,6 +21,10 @@ public class GestionCampusServiceImpl implements GestionCampusService {
 
     @Autowired
     private BatimentRepository batimentRepository;
+
+    // Injection du Repository pour l'accès aux données (DAO)
+    @Autowired
+    private CampusRepository campusRepository;
 
     // ----------------------------------------------------------------------
     // 1. Implémentation du comptage des bâtiments et salles par campus
@@ -119,7 +126,6 @@ public class GestionCampusServiceImpl implements GestionCampusService {
     }
 
 
-
     // ----------------------------------------------------------------------
     // 5. et 6. Implémentation des méthodes du TP1
     // ----------------------------------------------------------------------
@@ -133,4 +139,28 @@ public class GestionCampusServiceImpl implements GestionCampusService {
     public List<Object[]> compterSallesByType() {
         return salleRepository.countSallesByType();
     }
+
+
+
+    // thymeleaf
+
+    @Override
+    public List<Campus> findAllCampus() {
+        // L'implémentation utilise la méthode findAll() héritée de JpaRepository
+        return campusRepository.findAll();
+    }
+    @Override
+    @Transactional(readOnly = true) // Lecture seule pour optimiser
+    public Campus findCampusWithBatiments(String nomCampus) {
+        // Utilisation de la méthode JPQL pour charger le campus et ses bâtiments en une seule requête
+        return campusRepository.findByNomCFetchBatiments(nomCampus)
+                .orElseThrow(() -> new IllegalArgumentException("Campus non trouvé : " + nomCampus));
+    }
+
+
+
+
+
+
+
 }

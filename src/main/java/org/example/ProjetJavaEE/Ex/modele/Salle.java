@@ -35,6 +35,18 @@ public class Salle {
     // Constructeur par défaut (requis par JPA)
     public Salle() {}
 
+    // --- CONSTRUCTEUR D'INITIALISATION POUR LES TUPLES DU SCRIPT ---
+    // Ordre des arguments dans le script initial :
+    // (numS, capacite, typeS, acces, etage, batiment)
+    public Salle(String numSalle, int capacite, TypeSalle typeS, String accessibilite, String etage, Batiment batiment) {
+        this.numSalle = numSalle;
+        this.capacite = capacite;
+        this.typeS = typeS; // Note : Le type de salle est à la 3e position
+        this.accessibilite = accessibilite;
+        this.etage = etage;
+        this.batiment = batiment; // L'objet Batiment pour la clé étrangère
+    }
+
     // ------------------------------------------
     //             GETTERS et SETTERS
     // ------------------------------------------

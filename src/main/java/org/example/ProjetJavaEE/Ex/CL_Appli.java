@@ -2,7 +2,6 @@ package org.example.ProjetJavaEE.Ex;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.example.ProjetJavaEE.Ex.service.GestionCampusService;
 import org.example.ProjetJavaEE.Ex.service.IGestionComposanteService;
@@ -42,6 +41,13 @@ public class CL_Appli implements CommandLineRunner {
 
     @Autowired
     private UniversiteRepository universiteRepository;
+
+    // Dans CL_Appli.java (ajoutez si manquantes)
+
+    // Assurez-vous d'avoir l'interface ExploiteRepository si vous ne l'avez pas déjà
+    @Autowired
+    private ExploiteRepository exploiteRepository;
+// ... vos autres injections (CampusRepository, BatimentRepository, ComposanteRepository, SalleRepository)
 
 
 
@@ -253,6 +259,11 @@ public class CL_Appli implements CommandLineRunner {
 		// ... autres appels pour le TP2 ...
 
         // ... fin des tests de l'Exercice 1
+
+
+        // pour remplir bd
+
+        insertProjectDataInitial();
 
 
 	}
@@ -503,7 +514,107 @@ public class CL_Appli implements CommandLineRunner {
 		System.out.println("Capacité totale : " + capCampus + " places.");
 	}
 
+// Dans CL_Appli.java
 
+    @Transactional
+    public void insertProjectDataInitial() {
+        System.out.println("--- Démarrage de l'insertion du Jeu de Données Initial (Script Prof) ---");
+
+        // 1. DÉPENDANCE NÉCESSAIRE : L'Université de Montpellier doit exister.
+        // getReferenceById(acronyme) est utilisé car UM a été créé au début de run().
+        Universite um = universiteRepository.getReferenceById("UM");
+
+        // --- 2. CAMPUS (LIAISON UM OBLIGATOIRE) ---
+        // Utilisation du nouveau constructeur (nomC, ville, um)
+        Campus triolet = campusRepository.save(new Campus("Triolet", "Montpellier", um));
+        Campus stPriest = campusRepository.save(new Campus("St Priest", "Montpellier", um));
+        Campus pharmacie = campusRepository.save(new Campus("Pharmacie", "Montpellier", um));
+        Campus richter = campusRepository.save(new Campus("Richter", "Montpellier", um));
+        Campus fdeMende = campusRepository.save(new Campus("FDE Mende", "Mende", um));
+        Campus medecineNimes = campusRepository.save(new Campus("Medecine Nimes", "Nimes", um));
+
+
+
+
+        // --- 3. BÂTIMENT (Dépend de Campus) ---
+        Batiment trioletB36 = batimentRepository.save(new Batiment("triolet_b36", 2019, triolet));
+        Batiment trioletB16 = batimentRepository.save(new Batiment("triolet_b16", 1966, triolet));
+        Batiment trioletB05 = batimentRepository.save(new Batiment("triolet_b05", 1964, triolet));
+        Batiment stPriestB02 = batimentRepository.save(new Batiment("stPriest_b02", 1982, stPriest));
+
+        // Dans CL_Appli.java -> insertProjectDataInitial()
+
+// ... (Après l'insertion de stPriestB02) ...
+
+
+
+        System.out.println("-> Insertion des bâtiments factices pour les tests d'affichage...");
+
+// --- Ajout des Bâtiments Manquants ---
+        batimentRepository.save(new Batiment("bt_pharmacie", 2000, pharmacie));
+        batimentRepository.save(new Batiment("bt_richter", 1995, richter));
+        batimentRepository.save(new Batiment("bt_mende_A", 1970, fdeMende));
+        batimentRepository.save(new Batiment("bt_nimes_P", 1990, medecineNimes));
+
+
+        // --- 4. COMPOSANTE ---
+        Composante fds = composanteRepository.save(new Composante("FDS", "Faculte des Sciences", "JM. Marin"));
+        Composante iae = composanteRepository.save(new Composante("IAE", "Ecole Universitaire de Management", "E Houze"));
+        Composante polytech = composanteRepository.save(new Composante("Polytech", "Polytech Montpellier", "L. Torres"));
+
+
+        // --- 5. SALLE (Dépend de Batiment) ---
+        // Les insertions des 29 salles sont à ajouter ici, en utilisant les ENUM TypeSalle.
+        // Vous devez vous assurer que votre classe Salle a un constructeur complet et que votre ENUM TypeSalle est définie.
+
+        salleRepository.save(new Salle("A36.03", 120, TypeSalle.AMPHI, "oui", "rdc", trioletB36));
+        salleRepository.save(new Salle("A36.02", 120, TypeSalle.AMPHI, "oui", "rdc", trioletB36));
+        salleRepository.save(new Salle("A36.01", 120, TypeSalle.AMPHI, "oui", "rdc", trioletB36));
+        salleRepository.save(new Salle("TD36.202", 40, TypeSalle.NUMERIQUE, "oui", "2", trioletB36));
+        salleRepository.save(new Salle("TD36.203", 40, TypeSalle.NUMERIQUE, "oui", "2", trioletB36));
+        salleRepository.save(new Salle("TD36.204", 40, TypeSalle.NUMERIQUE, "oui", "2", trioletB36));
+        salleRepository.save(new Salle("SC36.04", 80, TypeSalle.SC, "oui", "1", trioletB36));
+        salleRepository.save(new Salle("TD36.101", 40, TypeSalle.TD, "oui", "1", trioletB36));
+        salleRepository.save(new Salle("TD36.302", 40, TypeSalle.TD, "oui", "3", trioletB36));
+        salleRepository.save(new Salle("TD36.402", 40, TypeSalle.TD, "oui", "4", trioletB36));
+        salleRepository.save(new Salle("SC16.03", 120, TypeSalle.AMPHI, "oui", "rdc", trioletB16));
+        salleRepository.save(new Salle("TD16.02", 18, TypeSalle.TD, "oui", "rdc", trioletB16));
+        salleRepository.save(new Salle("TPDeptInfo", 40, TypeSalle.NUMERIQUE, "oui", "rdc", trioletB16));
+        salleRepository.save(new Salle("TPBio", 40, TypeSalle.TP, "oui", "rdc", trioletB16));
+        salleRepository.save(new Salle("SC16.05", 48, TypeSalle.SC, "oui", "rdc", trioletB16));
+        salleRepository.save(new Salle("A5.02", 275, TypeSalle.AMPHI, "oui", "1", trioletB05));
+        salleRepository.save(new Salle("TD5.125", 20, TypeSalle.NUMERIQUE, "oui", "rdc", trioletB05));
+        salleRepository.save(new Salle("TD5.126", 31, TypeSalle.NUMERIQUE, "oui", "rdc", trioletB05));
+        salleRepository.save(new Salle("TD5.210", 40, TypeSalle.NUMERIQUE, "oui", "1", trioletB05));
+        salleRepository.save(new Salle("TD5.201", 40, TypeSalle.TD, "oui", "rdc", trioletB05));
+        salleRepository.save(new Salle("TD5.202", 40, TypeSalle.TD, "oui", "rdc", trioletB05));
+        salleRepository.save(new Salle("TD5.203", 40, TypeSalle.TD, "oui", "rdc", trioletB05));
+        salleRepository.save(new Salle("TD5.204", 40, TypeSalle.TD, "oui", "rdc", trioletB05));
+        salleRepository.save(new Salle("TD5.205", 40, TypeSalle.TD, "oui", "rdc", trioletB05));
+        salleRepository.save(new Salle("TD5.206", 40, TypeSalle.TD, "oui", "rdc", trioletB05));
+        salleRepository.save(new Salle("TD5.207", 40, TypeSalle.TD, "oui", "rdc", trioletB05));
+        salleRepository.save(new Salle("TD5.208", 40, TypeSalle.TD, "oui", "rdc", trioletB05));
+        salleRepository.save(new Salle("TD5.209", 40, TypeSalle.TD, "oui", "rdc", trioletB05));
+        salleRepository.save(new Salle("A_JJMoreau", 114, TypeSalle.AMPHI, "oui", "1", stPriestB02));
+
+        // --- 6. EXPLOITE (Liaison Many-to-Many) ---
+        // Nécessite l'implémentation des entités ExploiteId et Exploite.
+        // Si vous utilisez une entité Exploiite :
+        // exploiteRepository.save(new Exploite(fds, trioletB16)); // Exploite(Composante, Batiment)
+
+        // Si vous n'avez pas d'entité Exploite, l'insertion n'est pas possible directement ici.
+        // Je pars du principe que vous utiliserez une entité Exploite pour le moment.
+
+
+
+        // Si Exploite est une entité :
+        exploiteRepository.save(new Exploite(fds, trioletB16));
+        exploiteRepository.save(new Exploite(iae, trioletB16));
+        exploiteRepository.save(new Exploite(fds, trioletB36));
+        exploiteRepository.save(new Exploite(iae, trioletB05));
+
+        System.out.println("--- Insertion du Jeu de Données Initial Terminé. ---");
+    }
 
 
 
