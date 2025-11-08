@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Salles du Bâtiment [[${batiment.codeB}]]</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 90%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #f2f2f2; }
+    </style>
+</head>
+<body>
+<a th:href="@{/campus/list}">Retour à la liste des Campus</a>
+
+<h2 th:text="'Salles du Bâtiment ' + ${batiment.codeB} + ' (Campus: ' + ${batiment.campus.nomC} + ')'">Salles du Bâtiment</h2>
+
+<table>
+    <thead>
+    <tr>
+        <th>Numéro Salle</th>
+        <th>Type</th>
+        <th>Capacité</th>
+        <th>Étage</th>
+        <th>Accessibilité PMR</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="salle : ${salleList}">
+        <td th:text="${salle.numSalle}">Numéro</td>
+        <td th:text="${salle.typeS}">Type</td>
+        <td th:text="${salle.capacite}">Capacité</td>
+        <td th:text="${salle.etage}">Étage</td>
+        <td th:text="${salle.accessibilite}">Accessibilité</td>
+    </tr>
+    </tbody>
+</table>
+
+<p th:if="${salleList.empty}" th:text="'Le Bâtiment ' + ${batiment.codeB} + ' ne contient aucune salle enregistrée.'">
+    Aucune salle.
+</p>
+</body>
+</html>

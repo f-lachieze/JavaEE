@@ -3,6 +3,7 @@ package org.example.ProjetJavaEE.Ex.service.impl;
 import org.example.ProjetJavaEE.Ex.domain.BatimentRepository;
 import org.example.ProjetJavaEE.Ex.domain.CampusRepository;
 import org.example.ProjetJavaEE.Ex.domain.SalleRepository;
+import org.example.ProjetJavaEE.Ex.modele.Batiment;
 import org.example.ProjetJavaEE.Ex.modele.Campus;
 import org.example.ProjetJavaEE.Ex.modele.Salle;
 import org.example.ProjetJavaEE.Ex.service.GestionCampusService;
@@ -157,10 +158,13 @@ public class GestionCampusServiceImpl implements GestionCampusService {
                 .orElseThrow(() -> new IllegalArgumentException("Campus non trouvé : " + nomCampus));
     }
 
-
-
-
-
+    @Override
+    @Transactional(readOnly = true)
+    public Batiment findBatimentWithSalles(String codeBatiment) {
+        // Utilise la requête JPQL ci-dessus pour charger le bâtiment et toutes ses salles
+        return batimentRepository.findByCodeBFetchSalles(codeBatiment)
+                .orElseThrow(() -> new IllegalArgumentException("Bâtiment non trouvé : " + codeBatiment));
+    }
 
 
 }

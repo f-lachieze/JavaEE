@@ -1,5 +1,6 @@
 package org.example.ProjetJavaEE.Ex.service;
 
+import org.example.ProjetJavaEE.Ex.modele.Batiment;
 import org.example.ProjetJavaEE.Ex.modele.Campus;
 import org.example.ProjetJavaEE.Ex.modele.Salle;
 
@@ -46,5 +47,8 @@ public interface GestionCampusService {
 
     /** Retourne un campus par son nom, chargé avec ses bâtiments */
     Campus findCampusWithBatiments(String nomCampus);
+
+    /** Retourne un bâtiment par son code, chargé avec ses salles */
+    Batiment findBatimentWithSalles(String codeBatiment);
 
 }

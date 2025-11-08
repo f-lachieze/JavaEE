@@ -9,6 +9,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.example.ProjetJavaEE.Ex.modele.Batiment;
 
+import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import org.example.ProjetJavaEE.Ex.modele.*;
 
 @Repository
@@ -24,6 +28,7 @@ public interface BatimentRepository extends JpaRepository<Batiment, String> {
 	@Query("SELECT b.campus.nomC, COUNT(b) FROM Batiment b GROUP BY b.campus.nomC")
 	List<Object[]> countBatimentsByCampus();
 
-	// ... Autres méthodes pour le TP2 ...
+    @Query("SELECT b FROM Batiment b JOIN FETCH b.salles WHERE b.codeB = :codeBatiment")
+    Optional<Batiment> findByCodeBFetchSalles(@Param("codeBatiment") String codeBatiment);
 
 }
