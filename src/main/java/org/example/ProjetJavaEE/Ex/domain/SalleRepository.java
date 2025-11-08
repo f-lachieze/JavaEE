@@ -102,4 +102,13 @@ public interface SalleRepository extends JpaRepository<Salle, String> {
     @Query("SELECT SUM(s.capacite / :tailleGroupe) FROM Salle s JOIN s.batiment b WHERE b.campus.nomC = :nomCampus AND s.typeS IN :types")
     Long sumGroupsByCampusAndTypes(@Param("nomCampus") String nomCampus, @Param("tailleGroupe") int tailleGroupe, @Param("types") List<TypeSalle> types);
 
+
+    /**
+     * Calcule la somme des capacités des salles (capacité totale) pour un bâtiment donné.
+     * Retourne NULL si aucune salle n'est trouvée pour ce bâtiment.
+     */
+    @Query("SELECT SUM(s.capacite) FROM Salle s WHERE s.batiment.codeB = :codeBatiment")
+    Long calculerCapaciteTotaleParBatiment(@Param("codeBatiment") String codeBatiment);
+
+
 }

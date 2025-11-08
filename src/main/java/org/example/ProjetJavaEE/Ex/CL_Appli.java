@@ -614,6 +614,35 @@ public class CL_Appli implements CommandLineRunner {
         exploiteRepository.save(new Exploite(iae, trioletB05));
 
         System.out.println("--- Insertion du Jeu de Données Initial Terminé. ---");
+
+
+
+
+        // --- Récupérer les références des Bâtiments factices (pour l'insertion des salles) ---
+// Note: Ces références doivent exister à ce point du code.
+        Batiment btMende = batimentRepository.getReferenceById("bt_mende_A");
+        Batiment btNimesP = batimentRepository.getReferenceById("bt_nimes_P");
+        Batiment btPharmacie = batimentRepository.getReferenceById("bt_pharmacie");
+        Batiment btRichter = batimentRepository.getReferenceById("bt_richter");
+        Batiment btPaulva = batimentRepository.getReferenceById("Elearning Center");
+
+// --- AJOUT DES SALLES MINIMALES POUR GARANTIR LA COUVERTURE DES TESTS ---
+        System.out.println("-> Ajout des salles minimales pour les nouveaux bâtiments...");
+
+// Salle pour FDE Mende (Campus: FDE Mende)
+        salleRepository.save(new Salle("S-Mende-A01", 60, TypeSalle.AMPHI, "oui", "rdc", btMende));
+
+// Salle pour Medecine Nimes (Campus: Medecine Nimes)
+        salleRepository.save(new Salle("S-MedNimes-A01", 100, TypeSalle.AMPHI, "oui", "rdc", btNimesP));
+
+// Salle pour Pharmacie (Campus: Pharmacie)
+        salleRepository.save(new Salle("S-Pharma-T1", 40, TypeSalle.TD, "non", "2", btPharmacie));
+
+// Salle pour Richter (Campus: Richter)
+        salleRepository.save(new Salle("S-Richter-C1", 30, TypeSalle.SC, "oui", "1", btRichter));
+
+// Salle pour Paul Va (Campus: Paul va)
+        salleRepository.save(new Salle("S-Paulva-B1", 30, TypeSalle.SC, "oui", "1", btPaulva));
     }
 
 

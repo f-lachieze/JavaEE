@@ -21,7 +21,7 @@
         <th>Code Bâtiment</th>
         <th>Année de Construction</th>
         <th>Exploité par Composante(s)</th>
-        <th>Actions</th>
+        <th>Capacité Totale (Q4)</th> <th>Actions</th>
     </tr>
     </thead>
     <tbody>
@@ -30,11 +30,13 @@
         <td th:text="${batiment.anneeConstruction}">année</td>
 
         <td>
-            <span th:each="exploit : ${batiment.exploitations}">
-                <span th:text="${exploit.composante.acronyme}">FDS</span>
-                <span>, </span>
-            </span>
+                    <span th:each="exploit : ${batiment.exploitations}">
+                        <span th:text="${exploit.composante.acronyme}">FDS</span>
+                        <span>, </span>
+                    </span>
         </td>
+
+        <td th:text="${capaciteMap.get(batiment.codeB)} + ' places'">0 places</td>
 
         <td>
             <a th:href="@{/salle/list(batimentId=${batiment.codeB})}">Voir Salles</a>
