@@ -170,5 +170,27 @@ public class GestionCampusServiceImpl implements GestionCampusService {
                 .orElseThrow(() -> new IllegalArgumentException("Bâtiment non trouvé : " + codeBatiment));
     }
 
+    @Override
+    @Transactional // Nécessaire pour les opérations d'écriture (INSERT)
+    public Salle saveSalle(Salle salle) {
+        // La méthode save() de JpaRepository gère l'insertion si l'ID n'existe pas.
+        return salleRepository.saveAndFlush(salle);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Salle findSalleByNumSalle(String numSalle) {
+        // findById renvoie un Optional. get() force la récupération (lance NoSuchElementException si non trouvé)
+        return salleRepository.findById(numSalle)
+                .orElseThrow(() -> new IllegalArgumentException("Salle non trouvée : " + numSalle));
+    }
+
+    @Override
+    @Transactional
+    public void deleteSalle(String numSalle) {
+        // La méthode deleteById() du Repository est utilisée
+        salleRepository.deleteById(numSalle);
+    }
+
 
 }

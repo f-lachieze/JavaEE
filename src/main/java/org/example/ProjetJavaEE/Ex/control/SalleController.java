@@ -1,13 +1,14 @@
 package org.example.ProjetJavaEE.Ex.control;
 
 import org.example.ProjetJavaEE.Ex.modele.Batiment;
+import org.example.ProjetJavaEE.Ex.modele.Salle;
+import org.example.ProjetJavaEE.Ex.modele.TypeSalle;
 import org.example.ProjetJavaEE.Ex.service.GestionCampusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequestMapping("/salle")
@@ -40,4 +41,95 @@ public class SalleController {
             return "error/404"; // Utilise le template d'erreur que vous avez créé
         }
     }
+
+    /**
+     * (Post)
+     * Mappe l'URL /salle/new?batimentId=... pour afficher le formulaire d'ajout.
+     */
+    @GetMapping("/new")
+    public String showAddSalleForm(@RequestParam("batimentId") String codeBatiment, Model model) {
+
+        // 1. Récupérer le Bâtiment parent pour la liaison
+        // Note: Nous utilisons findBatimentWithSalles car le Bâtiment doit exister.
+        Batiment batiment = gcs.findBatimentWithSalles(codeBatiment);
+
+        // 2. Ajouter les objets nécessaires au modèle
+        model.addAttribute("salle", new Salle()); // Crée un objet Salle vide pour le formulaire
+        model.addAttribute("batiment", batiment); // Passe l'objet Bâtiment pour l'ID et l'affichage
+
+        // 3. Passe le TypeSalle ENUM pour la liste déroulante
+        model.addAttribute("typesSalle", TypeSalle.values());
+
+        return "salle/addSalleForm";
+
+    }
+
+    // Dans SalleController.java
+
+    /**
+     * (POST)
+     * Traite la soumission du formulaire et sauvegarde la nouvelle salle.
+     */
+    @PostMapping("/save")
+    public String saveSalle(@ModelAttribute("salle") Salle salle,
+                            BindingResult result,
+                            @RequestParam("batimentId") String codeBatiment,
+                            Model model) {
+
+        if (result.hasErrors()) {
+            // En cas d'erreur de validation (ex: numéro de salle manquant), retourne au formulaire
+            Batiment batiment = gcs.findBatimentWithSalles(codeBatiment);
+            model.addAttribute("batiment", batiment);
+            model.addAttribute("typesSalle", TypeSalle.values());
+            return "salle/addSalleForm";
+        }
+
+        // 1. Rattacher manuellement le Bâtiment (clé étrangère)
+        Batiment batiment = gcs.findBatimentWithSalles(codeBatiment);
+        salle.setBatiment(batiment);
+
+        // 2. Sauvegarde via le service
+        gcs.saveSalle(salle);
+
+        // 3. Redirige vers la liste des salles du bâtiment
+        return "redirect:/salle/list?batimentId=" + codeBatiment;
+    }
+
+
+
+    /**
+     * Affiche le formulaire de modification d'une salle existante.
+     * @param numSalle L'ID de la salle à éditer.
+     */
+    @GetMapping("/edit")
+    public String showEditSalleForm(@RequestParam("numSalle") String numSalle, Model model) {
+
+        // 1. Récupérer l'objet Salle existant
+        Salle salle = gcs.findSalleByNumSalle(numSalle); // ⬅️ Méthode de service à créer
+
+        // 2. Ajouter les objets nécessaires au modèle
+        model.addAttribute("salle", salle);
+        model.addAttribute("batiment", salle.getBatiment());
+        model.addAttribute("typesSalle", TypeSalle.values());
+
+        // 3. Réutiliser le même formulaire d'ajout pour la modification
+        return "salle/addSalleForm"; // Le formulaire sera pré-rempli par Thymeleaf
+    }
+
+// Dans SalleController.java
+
+    /**
+     * Supprime une salle par son ID et redirige.
+     * @param numSalle L'ID de la salle à supprimer.
+     */
+    @GetMapping("/delete")
+    public String deleteSalle(@RequestParam("numSalle") String numSalle,
+                              @RequestParam("batimentId") String codeBatiment) {
+
+        gcs.deleteSalle(numSalle); // ⬅️ Méthode de service à créer
+
+        // Redirige vers la liste des salles du bâtiment
+        return "redirect:/salle/list?batimentId=" + codeBatiment;
+    }
+
 }

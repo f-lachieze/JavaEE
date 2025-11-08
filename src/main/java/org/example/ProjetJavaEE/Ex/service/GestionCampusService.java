@@ -8,6 +8,9 @@ import java.util.List;
 
 public interface GestionCampusService {
 
+    /** Sauvegarde une nouvelle salle dans la base de données */
+    Salle saveSalle(Salle salle);
+
     // 1. De combien de bâtiments et de salles d'enseignement dispose chaque campus?
     List<Object[]> compterBatimentsParCampus();
     List<Object[]> compterSallesParCampus();
@@ -50,6 +53,10 @@ public interface GestionCampusService {
 
     /** Retourne un bâtiment par son code, chargé avec ses salles */
     Batiment findBatimentWithSalles(String codeBatiment);
+
+    Salle findSalleByNumSalle(String numSalle);
+
+    void deleteSalle(String numSalle);
 
 
 
