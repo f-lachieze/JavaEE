@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter un Bâtiment</title>
+    <style>
+        div { margin-bottom: 15px; }
+        label { display: inline-block; width: 150px; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+<a th:href="@{/campus/list}">Annuler et Retour à la liste des Campus</a>
+
+<h2>Ajouter un Nouveau Bâtiment</h2>
+
+<form th:action="@{/batiment/save}" th:object="${batiment}" method="post">
+
+    <p class="error" th:if="${errorMessage}" th:text="${errorMessage}">Erreur générique.</p>
+
+    <div>
+        <label for="codeB">Code Bâtiment (Clé) :</label>
+        <input type="text" id="codeB" th:field="*{codeB}" required>
+    </div>
+
+    <div>
+        <label for="anneeConstruction">Année de Construction :</label>
+        <input type="number" id="anneeConstruction" th:field="*{anneeConstruction}" min="1900" max="2050" required>
+    </div>
+
+    <div>
+        <label for="campus">Campus Parent :</label>
+        <select id="campus" th:field="*{campus}" required>
+            <option value="">-- Choisir le Campus --</option>
+            <option th:each="campusOption : ${allCampus}"
+                    th:value="${campusOption.nomC}"
+                    th:text="${campusOption.nomC} + ' (' + ${campusOption.ville} + ')'">Campus Name</option>
+        </select>
+    </div>
+
+    <button type="submit">Enregistrer le Bâtiment</button>
+</form>
+</body>
+</html>

@@ -5,11 +5,15 @@ import org.example.ProjetJavaEE.Ex.modele.Campus;
 import org.example.ProjetJavaEE.Ex.modele.Salle;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface GestionCampusService {
 
     /** Sauvegarde une nouvelle salle dans la base de données */
     Salle saveSalle(Salle salle);
+
+    /** Sauvegarde un nouveau bâtiment dans la base de données */
+    Batiment saveBatiment(Batiment batiment);
 
     // 1. De combien de bâtiments et de salles d'enseignement dispose chaque campus?
     List<Object[]> compterBatimentsParCampus();
@@ -58,6 +62,12 @@ public interface GestionCampusService {
 
     void deleteSalle(String numSalle);
 
+    /** Récupère un bâtiment par son code (pour modification ou suppression) */
+    Batiment findBatimentByCode(String codeBatiment);
+
+    /** Supprime un bâtiment par son code */
+    void deleteBatiment(String codeBatiment);
 
 
+    Optional<Batiment> getById(String codeBatiment);
 }

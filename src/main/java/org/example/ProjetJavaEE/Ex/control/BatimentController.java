@@ -6,9 +6,8 @@ import org.example.ProjetJavaEE.Ex.service.GestionCampusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.validation.BindingResult; // NOUVEAU
 
 import java.util.HashMap;
 import java.util.Map;
@@ -61,4 +60,99 @@ public class BatimentController {
             return "error/404";
         }
     }
+
+    /**
+     * Affiche le formulaire d'ajout d'un nouveau bâtiment.
+     */
+    @GetMapping("/new")
+    public String showAddBatimentForm(Model model) {
+
+        // 1. Ajouter l'objet Batiment vide pour le formulaire
+        model.addAttribute("batiment", new Batiment());
+
+        // 2. Récupérer la liste des Campus pour la liste déroulante (FK)
+        // Nous utilisons findAllCampus du service (ou campusRepository.findAll())
+        model.addAttribute("allCampus", gcs.findAllCampus());
+
+        return "batiment/addBatimentForm";
+    }
+
+
+    // Dans BatimentController.java
+
+    /**
+     * Traite la soumission du formulaire et sauvegarde le nouveau bâtiment.
+     */
+    @PostMapping("/save")
+    public String saveBatiment(@ModelAttribute("batiment") Batiment batiment,
+                               BindingResult result,
+                               Model model) {
+
+        // Vous pouvez ajouter ici la validation des données si nécessaire (ex: codeB unique, annee valide)
+
+        if (result.hasErrors()) {
+            // En cas d'erreur, repasser la liste des campus et retourner au formulaire
+            model.addAttribute("allCampus", gcs.findAllCampus());
+            return "batiment/addBatimentForm";
+        }
+
+        try {
+            // Sauvegarde via le service
+            gcs.saveBatiment(batiment);
+        } catch (Exception e) {
+            // Gestion simple des erreurs d'intégrité (ex: codeB déjà utilisé)
+            model.addAttribute("errorMessage", "Erreur d'enregistrement : le code Bâtiment est peut-être déjà utilisé.");
+            model.addAttribute("allCampus", gcs.findAllCampus());
+            return "batiment/addBatimentForm";
+        }
+
+        // Redirige vers la liste des bâtiments du Campus nouvellement créé
+        return "redirect:/batiment/list?campusId=" + batiment.getCampus().getNomC();
+    }
+
+
+    /**
+     * Affiche le formulaire pour modifier un bâtiment existant.
+     * Le formulaire sera pré-rempli avec les données du bâtiment récupéré.
+     */
+    @GetMapping("/edit")
+    public String showEditBatimentForm(@RequestParam("codeBatiment") String codeBatiment, Model model) {
+
+        // 1. Récupérer l'objet Batiment existant
+        Batiment batiment = gcs.findBatimentByCode(codeBatiment);
+
+        // 2. Ajouter les objets nécessaires au modèle
+        model.addAttribute("batiment", batiment);
+        model.addAttribute("allCampus", gcs.findAllCampus());
+
+        // 3. Retourne le formulaire d'ajout/modification
+        return "batiment/addBatimentForm";
+    }
+
+
+    /**
+     * Supprime un bâtiment par son code.
+     */
+    @GetMapping("/delete")
+    public String deleteBatiment(@RequestParam("codeBatiment") String codeBatiment, Model model) {
+
+        try {
+            // Optionnel: On récupère le nom du campus pour la redirection après suppression
+            Campus campus = gcs.findBatimentByCode(codeBatiment).getCampus();
+            String nomCampus = campus.getNomC();
+
+            gcs.deleteBatiment(codeBatiment);
+
+            // Redirige vers la liste des bâtiments du campus parent
+            return "redirect:/batiment/list?campusId=" + nomCampus;
+
+        } catch (Exception e) {
+            // En cas d'erreur (ex: impossible de supprimer car des Salles sont encore liées sans CASCADE.REMOVE)
+            model.addAttribute("errorMessage", "Erreur lors de la suppression du bâtiment : " + e.getMessage());
+            return "error/404";
+        }
+    }
+
+
+
 }

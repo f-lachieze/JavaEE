@@ -31,4 +31,8 @@ public interface BatimentRepository extends JpaRepository<Batiment, String> {
     @Query("SELECT b FROM Batiment b JOIN FETCH b.salles WHERE b.codeB = :codeBatiment")
     Optional<Batiment> findByCodeBFetchSalles(@Param("codeBatiment") String codeBatiment);
 
+
+
+
+
 }

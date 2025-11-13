@@ -10,6 +10,8 @@ import org.example.ProjetJavaEE.Ex.service.GestionCampusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
+
 import org.example.ProjetJavaEE.Ex.modele.TypeSalle;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -178,6 +180,13 @@ public class GestionCampusServiceImpl implements GestionCampusService {
     }
 
     @Override
+    @Transactional // Nécessaire pour l'opération d'écriture (INSERT)
+    public Batiment saveBatiment(Batiment batiment) {
+        // save() gère l'insertion si l'ID n'existe pas.
+        return batimentRepository.save(batiment);
+    }
+
+    @Override
     @Transactional(readOnly = true)
     public Salle findSalleByNumSalle(String numSalle) {
         // findById renvoie un Optional. get() force la récupération (lance NoSuchElementException si non trouvé)
@@ -193,7 +202,25 @@ public class GestionCampusServiceImpl implements GestionCampusService {
     }
 
 
+    @Override
+    @Transactional(readOnly = true)
+    public Batiment findBatimentByCode(String codeBatiment) {
+        // Utilise findById du Repository pour récupérer le bâtiment
+        return batimentRepository.findById(codeBatiment)
+                .orElseThrow(() -> new IllegalArgumentException("Bâtiment non trouvé : " + codeBatiment));
+    }
 
+    @Override
+    @Transactional
+    public void deleteBatiment(String codeBatiment) {
+        // Utilise deleteById du Repository
+        batimentRepository.deleteById(codeBatiment);
+    }
+
+    @Override
+    public Optional<Batiment> getById(String codeBatiment) {
+        return batimentRepository.findById(codeBatiment);
+    }
 
 
 }

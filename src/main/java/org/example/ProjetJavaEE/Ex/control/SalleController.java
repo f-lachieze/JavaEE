@@ -26,7 +26,7 @@ public class SalleController {
 
         try {
             // 1. Récupération du Bâtiment et de la liste de ses salles
-            Batiment batiment = gcs.findBatimentWithSalles(codeBatiment);
+            Batiment batiment = gcs.getById(codeBatiment).get();
 
             // 2. Ajout des données au Modèle
             model.addAttribute("batiment", batiment); // Le bâtiment complet
@@ -51,7 +51,7 @@ public class SalleController {
 
         // 1. Récupérer le Bâtiment parent pour la liaison
         // Note: Nous utilisons findBatimentWithSalles car le Bâtiment doit exister.
-        Batiment batiment = gcs.findBatimentWithSalles(codeBatiment);
+        Batiment batiment = gcs.findBatimentByCode(codeBatiment);
 
         // 2. Ajouter les objets nécessaires au modèle
         model.addAttribute("salle", new Salle()); // Crée un objet Salle vide pour le formulaire
@@ -78,14 +78,14 @@ public class SalleController {
 
         if (result.hasErrors()) {
             // En cas d'erreur de validation (ex: numéro de salle manquant), retourne au formulaire
-            Batiment batiment = gcs.findBatimentWithSalles(codeBatiment);
+            Batiment batiment = gcs.findBatimentByCode(codeBatiment);
             model.addAttribute("batiment", batiment);
             model.addAttribute("typesSalle", TypeSalle.values());
             return "salle/addSalleForm";
         }
 
         // 1. Rattacher manuellement le Bâtiment (clé étrangère)
-        Batiment batiment = gcs.findBatimentWithSalles(codeBatiment);
+        Batiment batiment = gcs.findBatimentByCode(codeBatiment);
         salle.setBatiment(batiment);
 
         // 2. Sauvegarde via le service

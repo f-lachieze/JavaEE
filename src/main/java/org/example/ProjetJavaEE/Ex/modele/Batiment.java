@@ -4,7 +4,7 @@ import java.util.Set;
 import jakarta.persistence.*;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.CascadeType;
-import java.util.HashSet; // <-- Assurez-vous que cet import est présent
+import java.util.HashSet;
 
 @Entity
 @Table(name = "BATIMENT")
