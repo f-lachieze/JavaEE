@@ -49,11 +49,16 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+
                         // Les pages de consultation (listCampus, listBatiments, listSalles) sont accessibles à tous (y compris ANONYME)
                         .requestMatchers(new AntPathRequestMatcher("/campus/list")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/batiment/list")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/salle/list")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/service/capacity")).permitAll()
+
+                        // NOUVEAU : Autoriser l'accès à la racine (/) pour tous
+                        .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+
 
                         // Les opérations de MODIFICATION/SUPPRESSION/AJOUT requièrent le rôle ADMIN
                         .requestMatchers(new AntPathRequestMatcher("/salle/new")).hasRole("ADMIN")
@@ -67,6 +72,7 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
+                        .loginPage("/login")
                         .permitAll() // Autorise l'accès à la page de login par tous
                 )
                 .logout(logout -> logout

@@ -15,4 +15,16 @@ public class HomeController {
         // Retourne le nom du template : src/main/resources/templates/index.html
         return "index";
     }
+
+    // AJOUTER CETTE MÉTHODE POUR LA PAGE DE CONNEXION
+    /**
+     * Mappe l'URL "/login" à la page de connexion personnalisée.
+     * Ceci est nécessaire pour que Spring MVC utilise le template login.html
+     * au lieu du formulaire par défaut de Spring Security.
+     */
+    @GetMapping("/login")
+    public String login() {
+        // Retourne le nom du template : src/main/resources/templates/login.html
+        return "login";
+    }
 }

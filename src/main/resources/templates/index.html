@@ -1,47 +1,133 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Gestion des Campus - Accueil</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 40px; background-color: #f4f7f6; }
-        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        body { font-family: Arial, sans-serif; margin: 0; background-color: #f4f7f6; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background-color: white;
+            border-bottom: 1px solid #ddd;
+        }
+        .container { max-width: 800px; margin: 40px auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
         h1 { color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
+        h2.section-title {
+            color: #4CAF50; /* Couleur verte pour le titre de section */
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 5px;
+        }
         ul { list-style: none; padding: 0; }
-        li { margin-bottom: 10px; font-size: 1.1em; }
+        li { margin-bottom: 12px; font-size: 1.1em; }
         a { text-decoration: none; color: #28a745; font-weight: bold; }
         a:hover { text-decoration: underline; }
+
+        /* Style pour le bouton */
+        .auth-button {
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            cursor: pointer; /* Ajouté pour le bouton de formulaire */
+        }
+        .login-button {
+            background-color: #007bff;
+            color: white;
+            border: none; /* Assure que le bouton est sans bordure si c'est un <button> */
+        }
+        .login-button:hover {
+            background-color: #0056b3;
+            text-decoration: none;
+        }
+        .logout-button {
+            background-color: #dc3545;
+            color: white;
+            border: none; /* Assure que le bouton est sans bordure */
+        }
+        .logout-button:hover {
+            background-color: #c82333;
+            text-decoration: none;
+        }
+        .role-tag {
+            background-color: #f0f0f0;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
     </style>
 </head>
 <body>
+
+<div class="header">
+    <div>
+        <h2 style="color: #007bff; margin: 0;">Campus Manager</h2>
+    </div>
+
+    <div>
+        <div sec:authorize="isAuthenticated()" style="display: flex; align-items: center;">
+            <span style="margin-right: 15px;">
+                Bienvenue, <strong th:text="${#authentication.name}">utilisateur</strong>
+
+                <span sec:authentication="authorities" class="role-tag">ROLE</span>
+            </span>
+
+            <form th:action="@{/logout}" method="post" style="display: inline;">
+                <button type="submit" class="auth-button logout-button">Se Déconnecter</button>
+            </form>
+        </div>
+
+        <div sec:authorize="!isAuthenticated()">
+            <a th:href="@{/login}" class="auth-button login-button">Se Connecter</a>
+        </div>
+    </div>
+</div>
 <div class="container">
-    <h1>Campus Manager (Université de Montpellier)</h1>
+    <h1 style="margin-top: 0;">Université de Montpellier (UM)</h1>
 
     <p>Bienvenue sur l'interface de gestion des campus, des bâtiments et des salles, développée en Spring Boot (Jakarta EE / JPA).</p>
     <p>Ce projet couvre les exigences des TP1 et TP2, y compris les services métier complexes et la couche de présentation Thymeleaf.</p>
 
     <hr/>
 
-    <h2>🔎 Navigation & Consultation des Données</h2>
+    <h2 class="section-title">🔎 Navigation & Consultation des Données (Ouvert à Tous)</h2>
     <ul>
         <li>
             <a th:href="@{/campus/list}">Consulter la Liste des Campus et des Bâtiments</a>
-            (Accès lecture de base)
+            (Point de départ pour naviguer dans la structure)
         </li>
 
         <li>
             <a th:href="@{/service/capacity}">Calculs de Capacité et Nombre de Groupes (Q4, Q5, Q6 TP2)</a>
-            (Logique métier)
-        </li>
-
-        <li>
-            <a th:href="@{/salle/new(batimentId='triolet_b36')}">Ajouter une Nouvelle Salle (CRUD - Exemple)</a>
+            (Services métier complexes)
         </li>
     </ul>
 
     <hr/>
 
-    <h2>🛠️ Architecture du Projet</h2>
+    <div sec:authorize="hasRole('ADMIN')">
+        <h2 class="section-title" style="color: #dc3545;">🔑 Opérations CRUD (Réservé aux ADMIN)</h2>
+        <ul style="border: 1px dashed #dc3545; padding: 15px; border-radius: 5px;">
+            <li>
+                <a th:href="@{/batiment/new}">Ajouter un Nouveau Bâtiment</a>
+            </li>
+            <li>
+                <a th:href="@{/salle/new(batimentId='triolet_b36')}">Ajouter une Nouvelle Salle (Ex: Bâtiment Triolet B36)</a>
+            </li>
+        </ul>
+        <hr/>
+    </div>
+
+    <div sec:authorize="hasRole('GESTIONNAIRE')">
+        <p style="color: orange; font-style: italic;">Vous avez le rôle GESTIONNAIRE. Vous pouvez effectuer des consultations avancées et des modifications restreintes.</p>
+    </div>
+
+    <h2 class="section-title">🛠️ Architecture du Projet</h2>
     <p>L'application respecte l'architecture en couches :</p>
     <ul>
         <li>**Couche Persistance** : Entités JPA (Hibernate) & Repositories.</li>
