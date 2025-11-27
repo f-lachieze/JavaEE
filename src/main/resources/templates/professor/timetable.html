@@ -1,65 +1,77 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>Mon Emploi du Temps</title>
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f7f6; }
-        .container { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h1 { color: #007bff; border-bottom: 2px solid #007bff; padding-bottom: 10px; }
-        .welcome { font-size: 1.2em; margin-bottom: 20px; }
-        .timetable-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        .timetable-table th, .timetable-table td { border: 1px solid #ddd; padding: 10px; text-align: left; }
-        .timetable-table th { background-color: #007bff; color: white; }
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f7f6;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .timetable-table {
+            width: 100%;
+            border-collapse: collapse; /* Joint les bordures */
+            margin-top: 20px;
+        }
+        .timetable-table th, .timetable-table td {
+            border: 1px solid #ddd; /* Bordure de la grille */
+            padding: 12px 15px;
+            text-align: left;
+        }
+        .timetable-table th {
+            background-color: #e9ecef; /* Fond gris clair pour les en-têtes */
+            color: #495057;
+            font-weight: bold;
+        }
+        .timetable-table tr:nth-child(even) {
+            background-color: #f8f9fa; /* Lignes alternées pour la lisibilité */
+        }
     </style>
 </head>
 <body>
-
 <div class="container">
-    <h1>Emploi du Temps de <span th:text="${username}">Professeur</span></h1>
 
-    <div class="welcome">
-        <p>Bienvenue, <span th:text="${username}"></span>. Voici vos cours et réservations de salles pour la semaine.</p>
-    </div>
+    <a th:href="@{/}">← Retour à l'accueil</a>
 
-    <h2>Semaine en cours (Simulation)</h2>
+    <h2 th:text="'Emploi du Temps de ' + ${username}">Emploi du Temps</h2>
+
     <table class="timetable-table">
         <thead>
         <tr>
-            <th>Jour</th>
-            <th>Heure</th>
-            <th>Titre du Cours</th>
+            <th>Début</th>
+            <th>Fin</th>
             <th>Salle</th>
             <th>Bâtiment</th>
+            <th>Capacité</th>
         </tr>
         </thead>
         <tbody>
-        <tr>
-            <td>Lundi</td>
-            <td>08:00 - 10:00</td>
-            <td>Cours de Simulation 1</td>
-            <td>Salle A101</td>
-            <td>Bâtiment Alpha</td>
-        </tr>
-        <tr th:if="${username == 'prof'}">
-            <td>Mercredi</td>
-            <td>10:00 - 12:00</td>
-            <td>Cours Spécifique au Prof (<span th:text="${username}"></span>)</td>
-            <td>Salle B205</td>
-            <td>Bâtiment Beta</td>
-        </tr>
-        <tr>
-            <td colspan="5">Les données réelles seront chargées à partir de la base de données après implémentation du modèle JPA.</td>
+        <tr th:each="res : ${reservations}">
+            <td th:text="${#temporals.format(res.dateDebut, 'dd/MM/yyyy HH:mm')}">Date et heure de début</td>
+            <td th:text="${#temporals.format(res.dateFin, 'dd/MM/yyyy HH:mm')}">Date et heure de fin</td>
+            <td th:text="${res.salle.numSalle}">Salle ID</td>
+            <td th:text="${res.salle.batiment.codeB}">Bâtiment</td>
+            <td th:text="${res.salle.capacite} + ' places'">Capacité</td>
         </tr>
         </tbody>
     </table>
 
-    <p style="margin-top: 20px;">
-        <a th:href="@{/}">Retour à l'accueil</a> |
-        <a th:href="@{/logout}" sec:authorize="isAuthenticated()">Se déconnecter</a>
+    <p th:if="${reservations.empty}" style="color: #dc3545; margin-top: 20px;">
+        Vous n'avez actuellement aucune réservation de salle enregistrée.
     </p>
 </div>
-
 </body>
 </html>

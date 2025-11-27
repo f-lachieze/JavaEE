@@ -2,8 +2,10 @@ package org.example.ProjetJavaEE.Ex.service;
 
 import org.example.ProjetJavaEE.Ex.modele.Batiment;
 import org.example.ProjetJavaEE.Ex.modele.Campus;
+import org.example.ProjetJavaEE.Ex.modele.Reservation;
 import org.example.ProjetJavaEE.Ex.modele.Salle;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,6 +70,11 @@ public interface GestionCampusService {
     /** Supprime un bâtiment par son code */
     void deleteBatiment(String codeBatiment);
 
-
     Optional<Batiment> getById(String codeBatiment);
+
+    /** Vérifie et enregistre une nouvelle réservation si aucun conflit n'est trouvé. */
+    Reservation reserverSalle(String numSalle, String professeur, LocalDateTime dateDebut, LocalDateTime dateFin) throws IllegalArgumentException;
+
+    /** Récupère les réservations d'un professeur pour son emploi du temps. */
+    List<Reservation> findReservationsByProf(String username);
 }

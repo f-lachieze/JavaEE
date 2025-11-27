@@ -1,0 +1,34 @@
+package org.example.ProjetJavaEE.Ex.domain;
+
+import org.example.ProjetJavaEE.Ex.modele.Reservation;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Repository
+public interface ReservationRepository extends JpaRepository<Reservation, Long> {
+
+    /**
+     * Vérifie les conflits de chevauchement de créneaux horaires pour une salle donnée.
+     * La requête cherche toute réservation existante (r) dont la date de début ou de fin
+     * tombe dans le nouvel intervalle [nouvelleDateDebut, nouvelleDateFin], OU si
+     * la réservation existante contient entièrement le nouvel intervalle.
+     */
+    @Query("SELECT r FROM Reservation r WHERE r.salle.numSalle = :numSalle " +
+            "AND (" +
+            "  (r.dateDebut < :dateFin AND r.dateFin > :dateDebut)" + // Chevauchement standard
+            ")")
+    List<Reservation> findConflictingReservations(
+            @Param("numSalle") String numSalle,
+            @Param("dateDebut") LocalDateTime dateDebut,
+            @Param("dateFin") LocalDateTime dateFin);
+
+    /**
+     * Récupère toutes les réservations pour un professeur donné (utilisé pour l'emploi du temps).
+     */
+    List<Reservation> findByProfesseurUsernameOrderByDateDebut(String professeurUsername);
+}

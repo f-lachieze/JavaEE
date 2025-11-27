@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Réservation de Salle</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .success { color: green; font-weight: bold; margin-bottom: 15px; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        select, input[type="datetime-local"] { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 20px; }
+        button:hover { background-color: #1e7e34; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Réservation de Salle de Cours</h1>
+    <a th:href="@{/}" style="display: block; margin-bottom: 20px;">
+        ← Retour à l'accueil
+    </a>
+
+    <div th:if="${reservationStatus}" class="success" th:utext="${reservationStatus}">
+        Statut de la réservation.
+    </div>
+
+    <form th:action="@{/reservation/save}" method="post">
+
+        <label for="numSalle">Salle à Réserver (Capacité):</label>
+        <select id="numSalle" name="numSalle" required>
+            <option th:each="salle : ${allSalles}"
+                    th:value="${salle.numSalle}"
+                    th:text="${salle.numSalle} + ' (' + ${salle.batiment.codeB} + ' - Cap: ' + ${salle.capacite} + ')'"
+                    th:selected="${salle.numSalle == selectedSalleId}"> Salle ID (Batiment - Capacité)
+            </option>
+        </select>
+
+        <label for="usernameProf">Professeur Bénéficiaire:</label>
+        <select id="usernameProf" name="usernameProf" required>
+            <option th:each="prof : ${allProfessors}" th:value="${prof}" th:text="${prof}">Nom Professeur</option>
+        </select>
+
+        <label for="dateHeureDebut">Date et Heure de Début:</label>
+        <input type="datetime-local" id="dateHeureDebut" name="dateHeureDebut" required/>
+
+        <label for="dateHeureFin">Date et Heure de Fin:</label>
+        <input type="datetime-local" id="dateHeureFin" name="dateHeureFin" required/>
+
+        <button type="submit">Réserver la Salle</button>
+    </form>
+</div>
+</body>
+</html>

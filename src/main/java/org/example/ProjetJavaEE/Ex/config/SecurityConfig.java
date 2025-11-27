@@ -86,6 +86,10 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/salle/edit", "GET")).hasRole("GESTIONNAIRE")
                         .requestMatchers(new AntPathRequestMatcher("/batiment/edit", "GET")).hasRole("GESTIONNAIRE")
 
+                        // Le GESTIONNAIRE accède aux formulaires de réservation (GET et POST)
+                        .requestMatchers(new AntPathRequestMatcher("/reservation/new")).hasRole("GESTIONNAIRE")
+                        .requestMatchers(new AntPathRequestMatcher("/reservation/save", "POST")).hasRole("GESTIONNAIRE")
+
 
                         // ----------------------------------------------------
                         // RÈGLES ADMINISTRATEUR (CRUD ÉCRITURE/SUPPRESSION)
@@ -102,11 +106,17 @@ public class SecurityConfig {
                         // ----------------------------------------------------
                         // RÈGLES GÉNÉRALES (PROFESSOR et autres futurs rôles)
                         // ----------------------------------------------------
+
+                        // Le PROFESSEUR accède à son emploi du temps
+                        .requestMatchers(new AntPathRequestMatcher("/professor/timetable")).hasRole("PROFESSOR")
+
+
                         // Toutes les autres requêtes nécessitent au moins d'être authentifié.
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
+                        .successHandler(new CustomLoginSuccessHandler())
                         .permitAll()
                 )
                 .logout(logout -> logout

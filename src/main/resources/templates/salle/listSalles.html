@@ -29,6 +29,7 @@
         <th>Accessibilité PMR</th>
         <th sec:authorize="hasRole('ADMIN')">Modifier</th>
         <th sec:authorize="hasRole('ADMIN')">Supprimer</th>
+        <th sec:authorize="hasRole('GESTIONNAIRE')" class="reservation-col">Réservation Rapide</th>
     </tr>
     </thead>
     <tbody>
@@ -47,6 +48,13 @@
             <a th:href="@{/salle/delete(numSalle=${salle.numSalle}, batimentId=${batiment.codeB})}"
                onclick="return confirm('Êtes-vous sûr de vouloir supprimer la salle ' + [[${salle.numSalle}]] + ' ?');">
                 Supprimer
+            </a>
+        </td>
+
+        <td sec:authorize="hasRole('GESTIONNAIRE')" class="reservation-col">
+            <a th:href="@{/reservation/new(numSalle=${salle.numSalle})}"
+               style="background-color: #007bff; color: white; padding: 5px 10px; border-radius: 4px; text-decoration: none;">
+                Réserver la Salle
             </a>
         </td>
     </tr>

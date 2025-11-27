@@ -9,8 +9,12 @@ import org.example.ProjetJavaEE.Ex.modele.Salle;
 import org.example.ProjetJavaEE.Ex.service.GestionCampusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.example.ProjetJavaEE.Ex.domain.ReservationRepository; // ⬅️ IMPORT
+import org.example.ProjetJavaEE.Ex.modele.Reservation;
 
 import org.example.ProjetJavaEE.Ex.modele.TypeSalle;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,6 +32,9 @@ public class GestionCampusServiceImpl implements GestionCampusService {
     // Injection du Repository pour l'accès aux données (DAO)
     @Autowired
     private CampusRepository campusRepository;
+
+    @Autowired
+    private ReservationRepository reservationRepository;
 
     // ----------------------------------------------------------------------
     // 1. Implémentation du comptage des bâtiments et salles par campus
@@ -220,6 +227,42 @@ public class GestionCampusServiceImpl implements GestionCampusService {
     @Override
     public Optional<Batiment> getById(String codeBatiment) {
         return batimentRepository.findById(codeBatiment);
+    }
+
+    @Override
+    @Transactional
+    public Reservation reserverSalle(String numSalle, String professeur, LocalDateTime dateDebut, LocalDateTime dateFin) throws IllegalArgumentException {
+
+        // 1. Vérification des conflits de créneau
+        List<Reservation> conflits = reservationRepository.findConflictingReservations(numSalle, dateDebut, dateFin);
+
+        if (!conflits.isEmpty()) {
+            throw new IllegalArgumentException("Conflit de réservation trouvé pour la salle " + numSalle + ". Le créneau est déjà occupé.");
+        }
+
+        // 2. Vérification de la validité du créneau
+        if (dateDebut.isAfter(dateFin) || dateDebut.isEqual(dateFin)) {
+            throw new IllegalArgumentException("La date de début doit être strictement antérieure à la date de fin.");
+        }
+
+        // 3. Création et sauvegarde de la réservation
+        // FIX: Utiliser salleRepository pour trouver la Salle
+        Salle salle = salleRepository.findById(numSalle)
+                .orElseThrow(() -> new IllegalArgumentException("Salle non trouvée : " + numSalle));
+
+        Reservation nouvelleReservation = new Reservation();
+        nouvelleReservation.setProfesseurUsername(professeur);
+        nouvelleReservation.setSalle(salle);
+        nouvelleReservation.setDateDebut(dateDebut);
+        nouvelleReservation.setDateFin(dateFin);
+
+        return reservationRepository.save(nouvelleReservation);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Reservation> findReservationsByProf(String username) {
+        return reservationRepository.findByProfesseurUsernameOrderByDateDebut(username);
     }
 
 

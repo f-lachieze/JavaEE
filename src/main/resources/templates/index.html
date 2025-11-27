@@ -123,8 +123,24 @@
         <hr/>
     </div>
 
-    <div sec:authorize="hasRole('GESTIONNAIRE')">
-        <p style="color: orange; font-style: italic;">Vous avez le rôle GESTIONNAIRE. Vous pouvez effectuer des consultations avancées et des modifications restreintes.</p>
+    <div sec:authorize="hasRole('GESTIONNAIRE')" class="role-section gestionnaire">
+        <h2>Espace Gestionnaire</h2>
+        <p>Vous pouvez consulter et lancer les outils de calcul des capacités de salle.</p>
+        <a th:href="@{/service/capacity}" class="action-link" style="background-color: #52c41a; color: white;">
+            Accéder aux Outils de Gestion
+        </a>
+
+        <a th:href="@{/reservation/new}" class="action-link" style="background-color: #007bff; color: white; margin-left: 10px;">
+            Réserver une Salle de Cours 🗓️
+        </a>
+    </div>
+
+    <div sec:authorize="hasRole('PROFESSOR')" class="role-section professor" style="margin-top: 20px;">
+        <h2>Espace Professeur</h2>
+        <p>Consultez votre emploi du temps et les détails de vos cours à venir.</p>
+        <a th:href="@{/professor/timetable}" class="action-link" style="background-color: #f7a300; color: white;">
+            Accéder à mon Emploi du Temps 📅
+        </a>
     </div>
 
     <h2 class="section-title">🛠️ Architecture du Projet</h2>
