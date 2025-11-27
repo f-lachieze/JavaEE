@@ -88,14 +88,23 @@ public class BatimentController {
                                BindingResult result,
                                Model model) {
 
-        // Vous pouvez ajouter ici la validation des données si nécessaire (ex: codeB unique, annee valide)
-
+        // 1. Gestion des erreurs de validation (BindingResult)
         if (result.hasErrors()) {
             // En cas d'erreur, repasser la liste des campus et retourner au formulaire
             model.addAttribute("allCampus", gcs.findAllCampus());
-            return "batiment/addBatimentForm";
-        }
 
+            // Choisir le formulaire de retour approprié
+            if (batiment.getCodeB() == null || batiment.getCodeB().isEmpty()) {
+                return "batiment/newBatimentForm"; // Mode Création
+            } else {
+                return "batiment/editBatimentForm"; // Mode Édition
+            }
+        }
+        // Supprimez le bloc 'else {}' qui causait le problème.
+        // Le code continue ici seulement s'il n'y a PAS d'erreurs de validation.
+
+
+        // 2. Enregistrement des données (try/catch)
         try {
             // Sauvegarde via le service
             gcs.saveBatiment(batiment);
@@ -103,10 +112,17 @@ public class BatimentController {
             // Gestion simple des erreurs d'intégrité (ex: codeB déjà utilisé)
             model.addAttribute("errorMessage", "Erreur d'enregistrement : le code Bâtiment est peut-être déjà utilisé.");
             model.addAttribute("allCampus", gcs.findAllCampus());
-            return "batiment/addBatimentForm";
+
+            // Retourne le formulaire approprié en cas d'erreur
+            if (batiment.getCodeB() == null || batiment.getCodeB().isEmpty()) {
+                return "batiment/newBatimentForm";
+            } else {
+                return "batiment/editBatimentForm";
+            }
         }
 
-        // Redirige vers la liste des bâtiments du Campus nouvellement créé
+        // 3. Redirection après succès
+        // Redirige vers la liste des bâtiments du Campus nouvellement créé ou modifié
         return "redirect:/batiment/list?campusId=" + batiment.getCampus().getNomC();
     }
 
@@ -126,7 +142,7 @@ public class BatimentController {
         model.addAttribute("allCampus", gcs.findAllCampus());
 
         // 3. Retourne le formulaire d'ajout/modification
-        return "batiment/addBatimentForm";
+        return "batiment/editBatimentForm";
     }
 
 

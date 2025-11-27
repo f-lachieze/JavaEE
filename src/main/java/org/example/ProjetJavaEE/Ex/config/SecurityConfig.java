@@ -14,7 +14,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 @Configuration
-@EnableWebSecurity // Active le support de la sécurité Web de Spring Security
+@EnableWebSecurity
 public class SecurityConfig {
 
     // 1. Définition du Hachage de Mot de Passe
@@ -23,7 +23,7 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    // 2. Définition des Utilisateurs et Rôles (En mémoire pour le développement)
+    // 2. Définition des Utilisateurs et Rôles (En mémoire)
     @Bean
     public UserDetailsService userDetailsService(PasswordEncoder passwordEncoder) {
 
@@ -41,7 +41,14 @@ public class SecurityConfig {
                 .roles("GESTIONNAIRE")
                 .build();
 
-        return new InMemoryUserDetailsManager(admin, gestionnaire);
+        // NOUVEAU: Rôle Professeur
+        UserDetails professor = User.builder()
+                .username("prof")
+                .password(passwordEncoder.encode("prof123"))
+                .roles("PROFESSOR")
+                .build();
+
+        return new InMemoryUserDetailsManager(admin, gestionnaire, professor); // Ajout du professeur
     }
 
     // 3. Définition des Règles d'Accès aux URL
@@ -50,30 +57,57 @@ public class SecurityConfig {
         http
                 .authorizeHttpRequests(auth -> auth
 
-                        // Les pages de consultation (listCampus, listBatiments, listSalles) sont accessibles à tous (y compris ANONYME)
+                        // ----------------------------------------------------
+                        // RÈGLES PUBLIQUES (ANONYME, GESTIONNAIRE, ADMIN, PROFESSOR)
+                        // Les pages de consultation de base sont accessibles à tous
+                        // ----------------------------------------------------
+                        .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/campus/list")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/batiment/list")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/salle/list")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/service/capacity")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/service/capacity", "GET")).permitAll()
+                        // NOUVEAU : Permettre l'accès au formulaire et au traitement d'inscription
+                        .requestMatchers(new AntPathRequestMatcher("/register")).permitAll()
 
-                        // NOUVEAU : Autoriser l'accès à la racine (/) pour tous
-                        .requestMatchers(new AntPathRequestMatcher("/")).permitAll()
+                        // ----------------------------------------------------
+                        // RÈGLES PROFESSEUR
+                        // ----------------------------------------------------
+                                .requestMatchers(new AntPathRequestMatcher("/professor/timetable")).hasRole("PROFESSOR")
+
+                        // ----------------------------------------------------
+                        // RÈGLES GESTIONNAIRE (ACTIONS SPÉCIFIQUES & LECTURE AVANCÉE)
+                        // ----------------------------------------------------
+                        // Le GESTIONNAIRE peut utiliser les outils de calcul métier (POST)
+                        .requestMatchers(new AntPathRequestMatcher("/service/calculate", "POST")).hasRole("GESTIONNAIRE")
+
+                        // Le GESTIONNAIRE peut visualiser les formulaires (EDIT/NEW GET) pour la lecture avancée ou la préparation,
+                        // mais ne peut pas sauvegarder ou créer (POST/DELETE).
+                        // Ceci est important pour la future fonctionnalité de réservation.
+                        .requestMatchers(new AntPathRequestMatcher("/salle/edit", "GET")).hasRole("GESTIONNAIRE")
+                        .requestMatchers(new AntPathRequestMatcher("/batiment/edit", "GET")).hasRole("GESTIONNAIRE")
 
 
-                        // Les opérations de MODIFICATION/SUPPRESSION/AJOUT requièrent le rôle ADMIN
-                        .requestMatchers(new AntPathRequestMatcher("/salle/new")).hasRole("ADMIN")
+                        // ----------------------------------------------------
+                        // RÈGLES ADMINISTRATEUR (CRUD ÉCRITURE/SUPPRESSION)
+                        // Le GESTIONNAIRE ne peut PAS créer, ni modifier la base.
+                        // ----------------------------------------------------
+                        .requestMatchers(new AntPathRequestMatcher("/salle/new")).hasRole("ADMIN") // GET et POST par défaut
                         .requestMatchers(new AntPathRequestMatcher("/salle/save")).hasRole("ADMIN")
-                        .requestMatchers(new AntPathRequestMatcher("/salle/edit")).hasRole("ADMIN")
                         .requestMatchers(new AntPathRequestMatcher("/salle/delete")).hasRole("ADMIN")
+
                         .requestMatchers(new AntPathRequestMatcher("/batiment/new")).hasRole("ADMIN")
                         .requestMatchers(new AntPathRequestMatcher("/batiment/save")).hasRole("ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/batiment/delete")).hasRole("ADMIN")
 
-                        // Toutes les autres requêtes (y compris le reste du CRUD) requièrent l'authentification (rôle GESTIONNAIRE minimum)
+                        // ----------------------------------------------------
+                        // RÈGLES GÉNÉRALES (PROFESSOR et autres futurs rôles)
+                        // ----------------------------------------------------
+                        // Toutes les autres requêtes nécessitent au moins d'être authentifié.
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form
                         .loginPage("/login")
-                        .permitAll() // Autorise l'accès à la page de login par tous
+                        .permitAll()
                 )
                 .logout(logout -> logout
                         .permitAll()

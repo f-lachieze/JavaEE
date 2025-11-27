@@ -44,6 +44,14 @@
         </a>
 
         <form th:action="@{/login}" method="post">
+            <input type="hidden" name="username" value="prof"/>
+            <input type="hidden" name="password" value="prof123"/>
+            <button type="submit" style="background-color: #007bff;">
+                Se Connecter en tant que Professeur
+            </button>
+        </form>
+
+        <form th:action="@{/login}" method="post">
             <input type="hidden" name="username" value="gest"/>
             <input type="hidden" name="password" value="gestion123"/>
             <button type="submit" style="background-color: #28a745;">

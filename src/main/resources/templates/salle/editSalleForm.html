@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title th:text="'Modifier la Salle ' + ${salle.numSalle}">Modifier une Salle</title>
+</head>
+<body>
+<a th:href="@{/salle/list(batimentId=${batiment.codeB})}">Annuler et Retour à la liste des Salles</a>
+
+<h2 th:text="'Modifier la Salle ' + ${salle.numSalle} + ' du Bâtiment ' + ${batiment.codeB}">Modifier Salle</h2>
+
+<form th:action="@{/salle/save(batimentId=${batiment.codeB})}"
+      th:object="${salle}" method="post">
+
+    <div>
+        <label for="numSalle">Numéro de Salle (Clé) :</label>
+        <input type="text" id="numSalle" th:field="*{numSalle}" required
+               readonly
+               style="background-color: #e9ecef; cursor: not-allowed;"
+               title="Le numéro de salle ne peut pas être modifié.">
+    </div>
+    <br/>
+
+    <div>
+        <label for="capacite">Capacité :</label>
+        <input type="number" id="capacite" th:field="*{capacite}" required>
+    </div>
+    <br/>
+
+    <div>
+        <label for="typeS">Type de Salle :</label>
+        <select id="typeS" th:field="*{typeS}" required>
+            <option th:each="type : ${typesSalle}"
+                    th:value="${type}"
+                    th:text="${type}">Type</option>
+        </select>
+    </div>
+    <br/>
+
+    <div>
+        <label for="accessibilite">Accessible PMR (oui/non) :</label>
+        <select id="accessibilite" th:field="*{accessibilite}">
+            <option value="oui">oui</option>
+            <option value="non">non</option>
+        </select>
+    </div>
+    <br/>
+
+    <div>
+        <label for="etage">Étage (rdc, 1, 2,...) :</label>
+        <input type="text" id="etage" th:field="*{etage}">
+    </div>
+    <br/>
+
+    <button type="submit">Enregistrer les Modifications</button>
+</form>
+</body>
+</html>

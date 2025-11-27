@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="UTF-8">
     <title>Salles du Bâtiment [[${batiment.codeB}]]</title>
@@ -16,7 +16,8 @@
 
 <h2 th:text="'Salles du Bâtiment ' + ${batiment.codeB} + ' (Campus: ' + ${batiment.campus.nomC} + ')'">Salles du Bâtiment</h2>
 
-<a th:href="@{/salle/new(batimentId=${batiment.codeB})}">Ajouter une nouvelle Salle</a>
+<a th:href="@{/salle/new(batimentId=${batiment.codeB})}"
+   sec:authorize="hasRole('ADMIN')">Ajouter une nouvelle Salle</a>
 
 <table>
     <thead>
@@ -26,8 +27,8 @@
         <th>Capacité</th>
         <th>Étage</th>
         <th>Accessibilité PMR</th>
-        <th>Modifier</th>
-        <th>Supprimer</th>
+        <th sec:authorize="hasRole('ADMIN')">Modifier</th>
+        <th sec:authorize="hasRole('ADMIN')">Supprimer</th>
     </tr>
     </thead>
     <tbody>
@@ -38,11 +39,11 @@
         <td th:text="${salle.etage}">Étage</td>
         <td th:text="${salle.accessibilite}">Accessibilité</td>
 
-        <td>
+        <td sec:authorize="hasRole('ADMIN')">
             <a th:href="@{/salle/edit(numSalle=${salle.numSalle}, batimentId=${batiment.codeB})}">Modifier</a>
         </td>
 
-        <td>
+        <td sec:authorize="hasRole('ADMIN')">
             <a th:href="@{/salle/delete(numSalle=${salle.numSalle}, batimentId=${batiment.codeB})}"
                onclick="return confirm('Êtes-vous sûr de vouloir supprimer la salle ' + [[${salle.numSalle}]] + ' ?');">
                 Supprimer

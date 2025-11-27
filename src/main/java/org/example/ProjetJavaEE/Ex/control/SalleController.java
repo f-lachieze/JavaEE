@@ -70,26 +70,42 @@ public class SalleController {
      * (POST)
      * Traite la soumission du formulaire et sauvegarde la nouvelle salle.
      */
+    /**
+     * (POST)
+     * Traite la soumission du formulaire et sauvegarde la nouvelle salle.
+     */
     @PostMapping("/save")
     public String saveSalle(@ModelAttribute("salle") Salle salle,
                             BindingResult result,
                             @RequestParam("batimentId") String codeBatiment,
                             Model model) {
 
-        if (result.hasErrors()) {
-            // En cas d'erreur de validation (ex: numéro de salle manquant), retourne au formulaire
-            Batiment batiment = gcs.findBatimentByCode(codeBatiment);
-            model.addAttribute("batiment", batiment);
-            model.addAttribute("typesSalle", TypeSalle.values());
-            return "salle/addSalleForm";
-        }
-
         // 1. Rattacher manuellement le Bâtiment (clé étrangère)
         Batiment batiment = gcs.findBatimentByCode(codeBatiment);
         salle.setBatiment(batiment);
 
-        // 2. Sauvegarde via le service
-        gcs.saveSalle(salle);
+        // Détermine si nous sommes en mode édition (pour le retour en cas d'erreur)
+        boolean isEditMode = (salle.getNumSalle() != null && !salle.getNumSalle().isEmpty());
+        String formTemplate = isEditMode ? "salle/editSalleForm" : "salle/addSalleForm";
+
+
+        if (result.hasErrors()) {
+            // En cas d'erreur de validation, retourne au formulaire approprié
+            model.addAttribute("batiment", batiment);
+            model.addAttribute("typesSalle", TypeSalle.values());
+            return formTemplate;
+        }
+
+        try {
+            // 2. Sauvegarde via le service
+            gcs.saveSalle(salle);
+        } catch (Exception e) {
+            // Gestion des erreurs d'intégrité (ex: numéro de salle déjà utilisé)
+            model.addAttribute("errorMessage", "Erreur d'enregistrement : le numéro de Salle est peut-être déjà utilisé.");
+            model.addAttribute("batiment", batiment);
+            model.addAttribute("typesSalle", TypeSalle.values());
+            return formTemplate; // Retourne le formulaire approprié en cas d'erreur
+        }
 
         // 3. Redirige vers la liste des salles du bâtiment
         return "redirect:/salle/list?batimentId=" + codeBatiment;
@@ -113,7 +129,7 @@ public class SalleController {
         model.addAttribute("typesSalle", TypeSalle.values());
 
         // 3. Réutiliser le même formulaire d'ajout pour la modification
-        return "salle/addSalleForm"; // Le formulaire sera pré-rempli par Thymeleaf
+        return "salle/editSalleForm"; // Le formulaire sera pré-rempli par Thymeleaf
     }
 
 // Dans SalleController.java

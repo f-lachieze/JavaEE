@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>Bâtiments du Campus - [[${campus.nomC}]]</title>
@@ -15,7 +16,10 @@
 
 <h2 th:text="'Bâtiments du Campus ' + ${campus.nomC} + ' (' + ${campus.ville} + ')'">Bâtiments du Campus</h2>
 
-<a th:href="@{/batiment/new}">Ajouter un nouveau Bâtiment</a>
+<a th:href="@{/batiment/new}"
+   sec:authorize="hasRole('ADMIN')">
+    ➕ Ajouter un nouveau Bâtiment
+</a>
 
 
 <p>
@@ -31,9 +35,9 @@
         <th>Exploité par Composante(s)</th>
         <th>Capacité Totale (Q4)</th>
         <th>Voir Salles</th>
-        <th>Modifier</th>
-        <th>Supprimer</th> </tr>
 
+        <th sec:authorize="hasRole('ADMIN')">Modifier</th>
+        <th sec:authorize="hasRole('ADMIN')">Supprimer</th>
     </tr>
     </thead>
     <tbody>
@@ -42,10 +46,10 @@
         <td th:text="${batiment.anneeConstruction}">année</td>
 
         <td>
-                    <span th:each="exploit : ${batiment.exploitations}">
-                        <span th:text="${exploit.composante.acronyme}">FDS</span>
-                        <span>, </span>
-                    </span>
+            <span th:each="exploit : ${batiment.exploitations}">
+                <span th:text="${exploit.composante.acronyme}">FDS</span>
+                <span>, </span>
+            </span>
         </td>
 
         <td th:text="${capaciteMap.get(batiment.codeB)} + ' places'">0 places</td>
@@ -54,17 +58,16 @@
             <a th:href="@{/salle/list(batimentId=${batiment.codeB})}">Voir Salles</a>
         </td>
 
-        <td>
+        <td sec:authorize="hasRole('ADMIN')">
             <a th:href="@{/batiment/edit(codeBatiment=${batiment.codeB})}">Modifier</a>
         </td>
 
-        <td>
+        <td sec:authorize="hasRole('ADMIN')">
             <a th:href="@{/batiment/delete(codeBatiment=${batiment.codeB})}"
                onclick="return confirm('Êtes-vous sûr de vouloir supprimer le bâtiment ' + [[${batiment.codeB}]] + ' ? Cela supprimera toutes les salles liées !');">
                 Supprimer
             </a>
         </td>
-
     </tr>
     </tbody>
 </table>
