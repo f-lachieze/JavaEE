@@ -1,6 +1,8 @@
 package org.example.ProjetJavaEE.Ex.control;
 
+import org.example.ProjetJavaEE.Ex.domain.ProfesseurRepository;
 import org.example.ProjetJavaEE.Ex.domain.SalleRepository;
+import org.example.ProjetJavaEE.Ex.modele.Professeur;
 import org.example.ProjetJavaEE.Ex.modele.Salle;
 import org.example.ProjetJavaEE.Ex.service.GestionCampusService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.security.core.userdetails.UserDetails;
-// Potentiellement nécessaire pour les listes de rôles
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,9 +37,14 @@ public class ReservationController {
     @Autowired
     private GestionCampusService gcs;
 
+    @Autowired
+    private ProfesseurRepository professeurRepository;
+
     /**
      * Mappe l'URL /reservation/new pour afficher le formulaire de réservation.
      */
+    // Dans ReservationController.java
+
     @GetMapping("/new")
     public String showReservationForm(@RequestParam(required = false) String numSalle, Model model) {
 
@@ -44,15 +52,17 @@ public class ReservationController {
         List<Salle> allSalles = salleRepository.findAll();
         model.addAttribute("allSalles", allSalles);
 
-        // 2. Lister les Professeurs (Simulation via InMemoryUserDetailsManager)
-        List<String> professors = getProfessorUsernames();
-        model.addAttribute("allProfessors", professors);
+        // ⬅️ CORRECTION : Lister TOUS les utilisateurs stockés dans la table PROFESSEUR
+        List<Professeur> allUsers = professeurRepository.findAll();
+        model.addAttribute("allUsers", allUsers);
 
         // 3. Ajouter l'ID de la salle à pré-sélectionner au modèle
-        model.addAttribute("selectedSalleId", numSalle); // ⬅️ NOUVEAU
+        model.addAttribute("selectedSalleId", numSalle);
 
         // 4. Modèle de données pour la soumission (Simplifié en String)
         model.addAttribute("reservationStatus", null);
+
+        // Suppression de l'appel à getProfessorUsernames()
 
         return "reservation/reservationForm";
     }
@@ -62,54 +72,64 @@ public class ReservationController {
      */
     // Dans src/main/java/org/example/ProjetJavaEE/Ex/control/ReservationController.java
 
+    // Dans src/main/java/org/example/ProjetJavaEE/Ex/control/ReservationController.java
+
     @PostMapping("/save")
     public String saveReservation(
             @RequestParam String numSalle,
             @RequestParam String usernameProf,
             @RequestParam String dateHeureDebut,
             @RequestParam String dateHeureFin,
+            RedirectAttributes redirectAttributes, // ⬅️ Pour les messages de SUCCÈS
             Model model) {
 
-        String message = null;
         String errorMessage = null;
         LocalDateTime debut;
         LocalDateTime fin;
 
         try {
-            // 1. Conversion des chaînes en LocalDateTime
+            // 1. Conversion et Validation des Dates
             debut = LocalDateTime.parse(dateHeureDebut);
             fin = LocalDateTime.parse(dateHeureFin);
 
-            // 2. Appel du service de réservation -> C'est ICI que la donnée est sauvegardée en BDD
-            // Le service gcs.reserverSalle s'occupe de la validation du créneau et de la persistance.
+            // 2. Appel du service de réservation (Validation et Sauvegarde en BDD)
             gcs.reserverSalle(numSalle, usernameProf, debut, fin);
 
-            message = "✅ RÉSERVATION ENREGISTRÉE : Salle " + numSalle +
+            // --- CAS DE SUCCÈS ---
+            String message = "✅ RÉSERVATION ENREGISTRÉE : Salle " + numSalle +
                     " réservée pour " + usernameProf +
                     " (Du " + debut.toLocalDate() + " à " + debut.toLocalTime() +
                     " au " + fin.toLocalTime() + ").";
 
-        } catch (java.lang.IllegalArgumentException e) { // Gère les conflits ou les dates invalides (service)
+            // Stocke le message dans l'attribut flash pour l'affichage après redirection
+            redirectAttributes.addFlashAttribute("reservationStatus", message);
+
+            // Redirection vers le formulaire propre (PRG)
+            return "redirect:/reservation/new";
+
+        } catch (java.lang.IllegalArgumentException | java.time.format.DateTimeParseException e) {
+            // --- CAS D'ÉCHEC (Conflit ou Date Invalide) ---
             errorMessage = "Erreur de Réservation : " + e.getMessage();
-        } catch (java.time.format.DateTimeParseException e) { // Gère les erreurs de format de date (parsing)
-            errorMessage = "Erreur de format de date/heure. Veuillez vérifier les champs.";
         } catch (Exception e) {
-            // Gère les erreurs inattendues (ex: problème de connexion à la BDD)
+            // --- CAS D'ERREUR SYSTÈME ---
             errorMessage = "Erreur système lors de l'enregistrement: " + e.getMessage();
         }
 
-        // Repasser les listes et les messages au modèle pour réaffichage
+        // --- LOGIQUE DE REVENIR AU FORMULAIRE EN CAS D'ÉCHEC ---
+
+        // Repasser les listes nécessaires pour que la vue s'affiche correctement
         model.addAttribute("allSalles", salleRepository.findAll());
+        // NOTE: allProfessors devrait être remplacé par allUsers/findAll()
         model.addAttribute("allProfessors", getProfessorUsernames());
 
-        // Repasser les valeurs pour que le formulaire soit pré-rempli en cas d'erreur
+        // Repasser les valeurs pour que le formulaire soit pré-rempli
         model.addAttribute("dateHeureDebut", dateHeureDebut);
         model.addAttribute("dateHeureFin", dateHeureFin);
 
-        // Affichage des messages
-        model.addAttribute("reservationStatus", message);
+        // Passe le message d'erreur pour l'affichage
         model.addAttribute("errorMessage", errorMessage);
 
+        // Retourne la vue (l'attribut 'reservationStatus' sera null, masquant le message de succès)
         return "reservation/reservationForm";
     }
 

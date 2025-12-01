@@ -36,9 +36,13 @@
             </option>
         </select>
 
-        <label for="usernameProf">Professeur Bénéficiaire:</label>
+        <label for="usernameProf">Réservation pour (Utilisateur) :</label>
         <select id="usernameProf" name="usernameProf" required>
-            <option th:each="prof : ${allProfessors}" th:value="${prof}" th:text="${prof}">Nom Professeur</option>
+            <option th:each="user : ${allUsers}"
+                    th:value="${user.username}"
+                    th:text="${user.username} + ' (' + ${user.nom} + ')'">
+                Nom Utilisateur
+            </option>
         </select>
 
         <label for="dateHeureDebut">Date et Heure de Début:</label>
