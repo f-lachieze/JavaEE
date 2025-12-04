@@ -31,4 +31,22 @@ public interface ReservationRepository extends JpaRepository<Reservation, Long> 
      * Récupère toutes les réservations pour un professeur donné (utilisé pour l'emploi du temps).
      */
     List<Reservation> findByProfesseurUsernameOrderByDateDebut(String professeurUsername);
+
+
+    /**
+     * Filtre les réservations par nom d'utilisateur, numéro de salle et date (début du jour).
+     */
+    @Query("SELECT r FROM Reservation r " +
+            "WHERE (:username IS NULL OR r.professeurUsername = :username) " +
+            "AND (:numSalle IS NULL OR r.salle.numSalle = :numSalle) " +
+            "AND (:startDate IS NULL OR (r.dateDebut >= :startDate AND r.dateDebut < :endDate)) " +
+            "ORDER BY r.dateDebut")
+    List<Reservation> findByFilters(
+            @Param("username") String username,
+            @Param("numSalle") String numSalle,
+            @Param("startDate") LocalDateTime startDate,
+            @Param("endDate") LocalDateTime endDate
+    );
+
+
 }

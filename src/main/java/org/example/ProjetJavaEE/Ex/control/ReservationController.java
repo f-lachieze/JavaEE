@@ -68,17 +68,7 @@ public class ReservationController {
         return "reservation/reservationForm";
     }
 
-    /**
-     * Affiche la liste de toutes les réservations (pour le Gestionnaire).
-     */
-    @GetMapping("/listAll")
-    public String listAllReservations(Model model) {
 
-        List<Reservation> reservations = gcs.findAllReservations();
-        model.addAttribute("reservations", reservations);
-
-        return "reservation/listReservations";
-    }
 
     /**
      * Supprime une réservation. Accessible uniquement par ADMIN ou GESTIONNAIRE.
@@ -89,6 +79,32 @@ public class ReservationController {
         gcs.deleteReservation(id);
 
         return "redirect:/reservation/listAll";
+    }
+
+    /**
+     * Affiche la liste de toutes les réservations, avec filtres.
+     */
+    @GetMapping("/listAll")
+    public String listAllReservations(
+            @RequestParam(required = false) String usernameFilter,
+            @RequestParam(required = false) String salleFilter,
+            @RequestParam(required = false) String dateFilter,
+            Model model) {
+
+        // 1. Appel du service avec les filtres
+        List<Reservation> reservations = gcs.findReservationsByFilters(usernameFilter, salleFilter, dateFilter);
+        model.addAttribute("reservations", reservations);
+
+        // 2. Passage des listes complètes pour les dropdowns du formulaire
+        model.addAttribute("allUsers", professeurRepository.findAll());
+        model.addAttribute("allSalles", salleRepository.findAll());
+
+        // 3. Passage des valeurs de filtre pour que la sélection persiste après la recherche
+        model.addAttribute("usernameFilter", usernameFilter);
+        model.addAttribute("salleFilter", salleFilter);
+        model.addAttribute("dateFilter", dateFilter); // Le format 'AAAA-MM-JJ' sera bien géré par l'input type="date"
+
+        return "reservation/listReservations";
     }
 
     /**

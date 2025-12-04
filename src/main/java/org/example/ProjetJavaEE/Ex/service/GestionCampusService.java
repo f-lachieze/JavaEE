@@ -84,4 +84,8 @@ public interface GestionCampusService {
 
     /** Supprime une réservation par son ID. */
     void deleteReservation(Long id);
+
+    /** Récupère les réservations en appliquant des filtres optionnels. */
+    List<Reservation> findReservationsByFilters(String username, String numSalle, String dateFilter); // ⬅️ NOUVELLE MÉTHODE
+
 }

@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
 import org.example.ProjetJavaEE.Ex.domain.ReservationRepository; // ⬅️ IMPORT
@@ -276,6 +278,37 @@ public class GestionCampusServiceImpl implements GestionCampusService {
     @Override
     public void deleteReservation(Long id) {
     reservationRepository.deleteById(id);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Reservation> findReservationsByFilters(String username, String numSalle, String dateFilter) {
+
+        LocalDateTime startDate = null;
+        LocalDateTime endDate = null;
+
+        // Logique pour gérer le filtre de date (convertit 'AAAA-MM-JJ' en intervalle)
+        if (dateFilter != null && !dateFilter.isEmpty()) {
+            try {
+                LocalDate date = LocalDate.parse(dateFilter);
+                startDate = date.atStartOfDay(); // Début du jour (00:00:00)
+                endDate = date.plusDays(1).atStartOfDay(); // Début du jour suivant
+            } catch (DateTimeParseException e) {
+                // Ignore le filtre si le format de date est invalide
+            }
+        }
+
+        // Assure que les chaînes vides sont traitées comme NULL pour la requête JPQL
+        String effectiveUsername = (username != null && !username.isEmpty()) ? username : null;
+        String effectiveNumSalle = (numSalle != null && !numSalle.isEmpty()) ? numSalle : null;
+
+        // Appel du Repository avec les filtres
+        return reservationRepository.findByFilters(
+                effectiveUsername,
+                effectiveNumSalle,
+                startDate,
+                endDate
+        );
     }
 
 
