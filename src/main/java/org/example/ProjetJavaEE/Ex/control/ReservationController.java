@@ -3,6 +3,7 @@ package org.example.ProjetJavaEE.Ex.control;
 import org.example.ProjetJavaEE.Ex.domain.ProfesseurRepository;
 import org.example.ProjetJavaEE.Ex.domain.SalleRepository;
 import org.example.ProjetJavaEE.Ex.modele.Professeur;
+import org.example.ProjetJavaEE.Ex.modele.Reservation;
 import org.example.ProjetJavaEE.Ex.modele.Salle;
 import org.example.ProjetJavaEE.Ex.service.GestionCampusService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,9 +69,31 @@ public class ReservationController {
     }
 
     /**
+     * Affiche la liste de toutes les réservations (pour le Gestionnaire).
+     */
+    @GetMapping("/listAll")
+    public String listAllReservations(Model model) {
+
+        List<Reservation> reservations = gcs.findAllReservations();
+        model.addAttribute("reservations", reservations);
+
+        return "reservation/listReservations";
+    }
+
+    /**
+     * Supprime une réservation. Accessible uniquement par ADMIN ou GESTIONNAIRE.
+     */
+    @GetMapping("/delete")
+    public String deleteReservation(@RequestParam Long id) {
+        // La méthode ne retourne rien, elle supprime et redirige
+        gcs.deleteReservation(id);
+
+        return "redirect:/reservation/listAll";
+    }
+
+    /**
      * Traite la soumission du formulaire de réservation.
      */
-
 
     @PostMapping("/save")
     public String saveReservation(

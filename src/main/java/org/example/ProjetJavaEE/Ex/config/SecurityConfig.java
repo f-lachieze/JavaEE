@@ -74,6 +74,8 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/batiment/edit", "GET")).hasRole("GESTIONNAIRE")
                         .requestMatchers(new AntPathRequestMatcher("/reservation/new")).hasRole("GESTIONNAIRE")
                         .requestMatchers(new AntPathRequestMatcher("/reservation/save", "POST")).hasRole("GESTIONNAIRE")
+                        .requestMatchers(new AntPathRequestMatcher("/reservation/listAll")).hasAnyRole("GESTIONNAIRE", "ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/reservation/delete")).hasAnyRole("GESTIONNAIRE", "ADMIN")
 
 
                         // RÈGLES ADMINISTRATEUR (Écriture / Suppression)

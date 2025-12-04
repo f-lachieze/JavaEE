@@ -133,6 +133,10 @@
         <a th:href="@{/reservation/new}" class="action-link" style="background-color: #007bff; color: white; margin-left: 10px;">
             Réserver une Salle de Cours 🗓️
         </a>
+
+        <a th:href="@{/reservation/listAll}" class="action-link" style="background-color: #52c41a; color: white; padding: 5px 10px; margin-left: 10px;">
+            Voir toutes les Réservations 📋
+        </a>
     </div>
 
     <div sec:authorize="hasRole('PROFESSOR')" class="role-section professor" style="margin-top: 20px;">

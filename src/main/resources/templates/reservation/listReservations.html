@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Toutes les Réservations</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { border-collapse: collapse; width: 100%; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background-color: #e9ecef; color: #495057; }
+        .delete-col { background-color: #f8d7da; }
+    </style>
+</head>
+<body>
+<a th:href="@{/}" style="display: block; margin-bottom: 20px;">
+    ← Retour à l'accueil
+</a>
+
+<h2>Tableau de Bord des Réservations</h2>
+
+<a th:href="@{/reservation/new}" style="background-color: #28a745; color: white; padding: 8px; border-radius: 4px; text-decoration: none;">
+    + Nouvelle Réservation
+</a>
+
+<table>
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Salle</th>
+        <th>Bâtiment</th>
+        <th>Professeur</th>
+        <th>Début</th>
+        <th>Fin</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="res : ${reservations}">
+        <td th:text="${res.id}">1</td>
+        <td th:text="${res.salle.numSalle}">A101</td>
+        <td th:text="${res.salle.batiment.codeB}">B36</td>
+        <td th:text="${res.professeurUsername}">user_name</td>
+        <td th:text="${#temporals.format(res.dateDebut, 'dd/MM/yyyy HH:mm')}">Date début</td>
+        <td th:text="${#temporals.format(res.dateFin, 'dd/MM/yyyy HH:mm')}">Date fin</td>
+
+        <td sec:authorize="hasRole('ADMIN') or hasRole('GESTIONNAIRE')" class="delete-col">
+            <a th:href="@{/reservation/delete(id=${res.id})}"
+               onclick="return confirm('Êtes-vous sûr de vouloir annuler cette réservation ?');"
+               style="color: red; font-weight: bold;">
+                Annuler
+            </a>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+<p th:if="${reservations.empty}" style="margin-top: 20px;">
+    Aucune réservation n'est enregistrée dans le système.
+</p>
+</body>
+</html>

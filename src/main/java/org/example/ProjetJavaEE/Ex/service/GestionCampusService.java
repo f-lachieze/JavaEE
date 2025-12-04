@@ -4,6 +4,7 @@ import org.example.ProjetJavaEE.Ex.modele.Batiment;
 import org.example.ProjetJavaEE.Ex.modele.Campus;
 import org.example.ProjetJavaEE.Ex.modele.Reservation;
 import org.example.ProjetJavaEE.Ex.modele.Salle;
+import org.example.ProjetJavaEE.Ex.modele.Reservation;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -77,4 +78,10 @@ public interface GestionCampusService {
 
     /** Récupère les réservations d'un professeur pour son emploi du temps. */
     List<Reservation> findReservationsByProf(String username);
+
+    /** Récupère toutes les réservations pour un tableau de bord. */
+    List<Reservation> findAllReservations();
+
+    /** Supprime une réservation par son ID. */
+    void deleteReservation(Long id);
 }

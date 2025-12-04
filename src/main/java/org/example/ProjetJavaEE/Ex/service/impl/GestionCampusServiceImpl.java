@@ -10,6 +10,7 @@ import org.example.ProjetJavaEE.Ex.service.GestionCampusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -263,6 +264,18 @@ public class GestionCampusServiceImpl implements GestionCampusService {
     @Transactional(readOnly = true)
     public List<Reservation> findReservationsByProf(String username) {
         return reservationRepository.findByProfesseurUsernameOrderByDateDebut(username);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<Reservation> findAllReservations() {
+        // Tri par date de début pour un affichage chronologique
+        return reservationRepository.findAll(org.springframework.data.domain.Sort.by("dateDebut"));
+    }
+
+    @Override
+    public void deleteReservation(Long id) {
+    reservationRepository.deleteById(id);
     }
 
 
