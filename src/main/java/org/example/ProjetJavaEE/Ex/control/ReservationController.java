@@ -70,9 +70,7 @@ public class ReservationController {
     /**
      * Traite la soumission du formulaire de réservation.
      */
-    // Dans src/main/java/org/example/ProjetJavaEE/Ex/control/ReservationController.java
 
-    // Dans src/main/java/org/example/ProjetJavaEE/Ex/control/ReservationController.java
 
     @PostMapping("/save")
     public String saveReservation(
@@ -80,10 +78,10 @@ public class ReservationController {
             @RequestParam String usernameProf,
             @RequestParam String dateHeureDebut,
             @RequestParam String dateHeureFin,
-            RedirectAttributes redirectAttributes, // ⬅️ Pour les messages de SUCCÈS
             Model model) {
 
         String errorMessage = null;
+        String reservationStatus = null; // ⬅️ UTILISER CE NOM DIRECTEMENT
         LocalDateTime debut;
         LocalDateTime fin;
 
@@ -92,20 +90,17 @@ public class ReservationController {
             debut = LocalDateTime.parse(dateHeureDebut);
             fin = LocalDateTime.parse(dateHeureFin);
 
-            // 2. Appel du service de réservation (Validation et Sauvegarde en BDD)
+            // 2. Appel du service de réservation
             gcs.reserverSalle(numSalle, usernameProf, debut, fin);
 
             // --- CAS DE SUCCÈS ---
-            String message = "✅ RÉSERVATION ENREGISTRÉE : Salle " + numSalle +
+            // ⬅️ ASSIGNER DIRECTEMENT LE MESSAGE À LA VARIABLE DU MODÈLE
+            reservationStatus = "✅ RÉSERVATION ENREGISTRÉE : Salle " + numSalle +
                     " réservée pour " + usernameProf +
                     " (Du " + debut.toLocalDate() + " à " + debut.toLocalTime() +
                     " au " + fin.toLocalTime() + ").";
 
-            // Stocke le message dans l'attribut flash pour l'affichage après redirection
-            redirectAttributes.addFlashAttribute("reservationStatus", message);
-
-            // Redirection vers le formulaire propre (PRG)
-            return "redirect:/reservation/new";
+            model.addAttribute("reservationStatus", reservationStatus); // ⬅️ AJOUT CORRIGÉ
 
         } catch (java.lang.IllegalArgumentException | java.time.format.DateTimeParseException e) {
             // --- CAS D'ÉCHEC (Conflit ou Date Invalide) ---
@@ -115,21 +110,21 @@ public class ReservationController {
             errorMessage = "Erreur système lors de l'enregistrement: " + e.getMessage();
         }
 
-        // --- LOGIQUE DE REVENIR AU FORMULAIRE EN CAS D'ÉCHEC ---
+        // --- LOGIQUE DE REVENIR AU FORMULAIRE EN CAS D'ÉCHEC OU SUCCÈS ---
 
         // Repasser les listes nécessaires pour que la vue s'affiche correctement
         model.addAttribute("allSalles", salleRepository.findAll());
-        // NOTE: allProfessors devrait être remplacé par allUsers/findAll()
-        model.addAttribute("allProfessors", getProfessorUsernames());
+        model.addAttribute("allUsers", professeurRepository.findAll());
 
         // Repasser les valeurs pour que le formulaire soit pré-rempli
         model.addAttribute("dateHeureDebut", dateHeureDebut);
         model.addAttribute("dateHeureFin", dateHeureFin);
 
-        // Passe le message d'erreur pour l'affichage
+        // Passe le message d'erreur pour l'affichage (null si succès)
         model.addAttribute("errorMessage", errorMessage);
 
-        // Retourne la vue (l'attribut 'reservationStatus' sera null, masquant le message de succès)
+        // Si le succès a eu lieu, 'reservationStatus' est déjà dans le Modèle.
+
         return "reservation/reservationForm";
     }
 

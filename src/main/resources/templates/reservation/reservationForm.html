@@ -7,13 +7,20 @@
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
         .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        .success { color: green; font-weight: bold; margin-bottom: 15px; }
+
+        /* Styles pour les messages */
+        .message { font-weight: bold; margin-bottom: 15px; padding: 10px; border-radius: 4px; }
+        .success { color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; }
+        .error { color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; }
+
         label { display: block; margin-top: 10px; font-weight: bold; }
         select, input[type="datetime-local"] { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
         button { background-color: #28a745; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 20px; }
         button:hover { background-color: #1e7e34; }
     </style>
 </head>
+
+
 <body>
 <div class="container">
     <h1>Réservation de Salle de Cours</h1>
@@ -21,8 +28,23 @@
         ← Retour à l'accueil
     </a>
 
-    <div th:if="${reservationStatus}" class="success" th:utext="${reservationStatus}">
-        Statut de la réservation.
+    <div th:if="${reservationStatus}"
+         class="message success"
+         style="color: #155724; background-color: #d4edda; border: 1px solid #c3e6cb; padding: 10px; margin-bottom: 15px;">
+
+        <span th:utext="${reservationStatus}">Statut de la réservation réussie.</span>
+
+        <a th:href="@{/reservation/new}"
+           class="action-link"
+           style="background-color: #007bff; color: white; padding: 5px 10px; margin-left: 20px;">
+            Faire une Nouvelle Réservation
+        </a>
+    </div>
+
+    <div th:if="${errorMessage}"
+         class="message error"
+         style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; margin-bottom: 15px;">
+        Erreur: <span th:text="${errorMessage}">Détail de l'erreur.</span>
     </div>
 
     <form th:action="@{/reservation/save}" method="post">
@@ -46,10 +68,10 @@
         </select>
 
         <label for="dateHeureDebut">Date et Heure de Début:</label>
-        <input type="datetime-local" id="dateHeureDebut" name="dateHeureDebut" required/>
+        <input type="datetime-local" id="dateHeureDebut" name="dateHeureDebut" required th:value="${dateHeureDebut}"/>
 
         <label for="dateHeureFin">Date et Heure de Fin:</label>
-        <input type="datetime-local" id="dateHeureFin" name="dateHeureFin" required/>
+        <input type="datetime-local" id="dateHeureFin" name="dateHeureFin" required th:value="${dateHeureFin}"/>
 
         <button type="submit">Réserver la Salle</button>
     </form>
