@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
 <head>
     <meta charset="UTF-8">
     <title>Liste des Campus - UM</title>
@@ -12,6 +13,13 @@
 </head>
 <body>
 <h2>Campus de l'Université de Montpellier (et autres)</h2>
+
+<div sec:authorize="hasRole('ADMIN')" style="margin-bottom: 20px;">
+    <a th:href="@{/campus/new}"
+       style="background-color: #007bff; color: white; padding: 10px 15px; border-radius: 5px; text-decoration: none; font-weight: bold;">
+        + Ajouter un Nouveau Campus
+    </a>
+</div>
 
 <p>Cette liste permet au Gestionnaire de consulter la base de données au sujet des campus.</p>
 

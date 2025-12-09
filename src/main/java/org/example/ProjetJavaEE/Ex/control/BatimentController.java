@@ -1,13 +1,15 @@
 package org.example.ProjetJavaEE.Ex.control;
 
+import org.example.ProjetJavaEE.Ex.domain.BatimentRepository;
 import org.example.ProjetJavaEE.Ex.modele.Batiment;
 import org.example.ProjetJavaEE.Ex.modele.Campus;
+import org.example.ProjetJavaEE.Ex.domain.CampusRepository;
 import org.example.ProjetJavaEE.Ex.service.GestionCampusService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.validation.BindingResult; // NOUVEAU
+import org.springframework.validation.BindingResult;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,6 +20,12 @@ public class BatimentController {
 
     @Autowired
     private GestionCampusService gcs;
+
+    @Autowired
+    private BatimentRepository batimentRepository;
+
+    @Autowired
+    private CampusRepository campusRepository;
 
     /**
      * Mappe l'URL /batiment/list pour afficher tous les bâtiments d'un campus donné.

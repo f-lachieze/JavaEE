@@ -23,7 +23,7 @@ public interface CampusRepository extends JpaRepository<Campus, String> {
 
 
 
-    @Query("SELECT c FROM Campus c JOIN FETCH c.batiments WHERE c.nomC = :nomCampus")
+    @Query("SELECT c FROM Campus c LEFT JOIN FETCH c.batiments WHERE c.nomC = :nomCampus")
     Optional<Campus> findByNomCFetchBatiments(@Param("nomCampus") String nomCampus);
 
 }

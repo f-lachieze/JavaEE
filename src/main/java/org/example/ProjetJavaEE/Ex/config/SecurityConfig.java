@@ -86,6 +86,10 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/batiment/save")).hasRole("ADMIN")
                         .requestMatchers(new AntPathRequestMatcher("/batiment/delete")).hasRole("ADMIN")
 
+                        .requestMatchers(new AntPathRequestMatcher("/campus/new")).hasRole("ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/campus/save")).hasRole("ADMIN")
+
+
                         // RÈGLE GÉNÉRALE (Doit être la dernière)
                         .anyRequest().authenticated()
                 )

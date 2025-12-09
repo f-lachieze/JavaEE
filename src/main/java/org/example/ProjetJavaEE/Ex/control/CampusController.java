@@ -1,6 +1,9 @@
 package org.example.ProjetJavaEE.Ex.control;
 
+import org.example.ProjetJavaEE.Ex.domain.CampusRepository;
+import org.example.ProjetJavaEE.Ex.domain.UniversiteRepository;
 import org.example.ProjetJavaEE.Ex.modele.Campus;
+import org.example.ProjetJavaEE.Ex.modele.Universite;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -8,19 +11,26 @@ import org.springframework.web.bind.annotation.*;
 import org.example.ProjetJavaEE.Ex.service.GestionCampusService; // ⬅️ Utiliser l'interface métier
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
-@RequestMapping("/campus") // ⬅️ Ajout de l'URL de base pour la ressource Campus
+@RequestMapping("/campus") //  Ajout de l'URL de base pour la ressource Campus
 public class CampusController {
 
     // 1. Injection du service par son interface
     @Autowired
-    private GestionCampusService gcs; // ⬅️ Renommer l'objet injecté (ou le laisser 'cs' si vous préférez)
+    private GestionCampusService gcs;
+
+    @Autowired
+    private CampusRepository campusRepository;
+
+    @Autowired
+    private UniversiteRepository universiteRepository;
 
     /**
      * Mappe l'URL /campus/list pour afficher tous les campus.
      */
-    @GetMapping("/list") // ⬅️ L'URL finale sera /campus/list
+    @GetMapping("/list") //  L'URL finale sera /campus/list
     public String listCampus(Model model) {
 
         // Appel direct de la méthode définie
@@ -29,6 +39,46 @@ public class CampusController {
 
         // 3. Retourne le chemin du template que nous avons créé
         return "campus/listCampus";
+    }
+
+
+    // --- 1. Affichage du Formulaire (GET /campus/new) ---
+    @GetMapping("/new")
+    public String showCampusForm(Model model) {
+        // Charge la liste des universités existantes pour le champ de sélection
+        List<Universite> allUniversities = universiteRepository.findAll();
+        model.addAttribute("allUniversities", allUniversities);
+
+        // Initialise un Campus vide pour l'objet de formulaire
+        model.addAttribute("campus", new Campus());
+
+        return "campus/campusForm";
+    }
+
+    // --- 2. Soumission du Formulaire (POST /campus/save) ---
+    @PostMapping("/save")
+    public String saveCampus(
+            @RequestParam String nomC,
+            @RequestParam String ville,
+            @RequestParam String universiteAcronyme) { // Récupère l'acronyme de l'université sélectionnée
+
+        // Recherche l'entité Universite complète par son PK (acronyme)
+        Optional<Universite> universiteOptional = universiteRepository.findById(universiteAcronyme);
+
+        if (universiteOptional.isEmpty()) {
+            // Gérer l'erreur si l'université n'est pas trouvée (ne devrait pas arriver si le formulaire est bien rempli)
+            // Pour l'instant, on lance une exception simple
+            throw new IllegalArgumentException("Université parente non trouvée.");
+        }
+
+        // Création de l'entité Campus
+        Campus newCampus = new Campus(nomC, ville, universiteOptional.get());
+
+        // Sauvegarde dans la base de données
+        campusRepository.save(newCampus);
+
+        // Redirection vers la liste des campus
+        return "redirect:/campus/list";
     }
 
     // Le constructeur est correct si vous voulez conserver le println pour le débogage
