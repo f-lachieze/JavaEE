@@ -6,13 +6,28 @@
     <title>Liste des Campus - UM</title>
     <style>
         body { font-family: Arial, sans-serif; margin: 20px; }
-        table { border-collapse: collapse; width: 60%; margin-top: 20px; }
+        table { border-collapse: collapse; width: 80%; margin-top: 20px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
         th { background-color: #f2f2f2; }
+
+
+        .message-error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border: 1px solid #f5c6cb;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+            font-weight: bold;
+
     </style>
 </head>
 <body>
 <h2>Campus de l'Université de Montpellier (et autres)</h2>
+
+<div th:if="${errorMessage}" class="message-error">
+    ⚠️ <span th:text="${errorMessage}">Erreur...</span>
+</div>
 
 <div sec:authorize="hasRole('ADMIN')" style="margin-bottom: 20px;">
     <a th:href="@{/campus/new}"
@@ -40,7 +55,21 @@
 
         <td>
             <a th:href="@{/batiment/list(campusId=${campus.nomC})}">Voir Bâtiments</a>
+
+            <a sec:authorize="hasRole('ADMIN')"
+               th:href="@{/campus/edit(nomC=${campus.nomC})}"
+               style="color: #ffc107; font-weight: bold; margin-right: 10px; text-decoration: none;">
+                Modifier
+            </a>
+
+            <a sec:authorize="hasRole('ADMIN')"
+               th:href="@{/campus/delete(nomC=${campus.nomC})}"
+               onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce campus ?');"
+               style="color: red;">
+                Supprimer
+            </a>
         </td>
+
     </tr>
     </tbody>
 </table>

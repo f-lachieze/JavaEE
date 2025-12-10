@@ -108,6 +108,10 @@
     <div sec:authorize="hasRole('ADMIN')">
         <h2 class="section-title" style="color: #dc3545;">🔑 Opérations CRUD (Réservé aux ADMIN)</h2>
         <ul style="border: 1px dashed #dc3545; padding: 15px; border-radius: 5px;">
+
+            <li>
+                <a th:href="@{/campus/new}">Ajouter un Nouveau Campus</a>
+            </li>
             <li>
                 <a th:href="@{/batiment/new}">Ajouter un Nouveau Bâtiment</a>
             </li>

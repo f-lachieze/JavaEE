@@ -81,6 +81,50 @@ public class CampusController {
         return "redirect:/campus/list";
     }
 
+
+    /**
+     * Supprime un campus (Uniquement s'il est vide).
+     */
+    @GetMapping("/delete")
+    public String deleteCampus(@RequestParam String nomC, Model model) {
+
+        // 1. On récupère le campus avec ses bâtiments (grâce à notre requête LEFT JOIN corrigée !)
+        Optional<Campus> campusOpt = campusRepository.findByNomCFetchBatiments(nomC);
+
+        if (campusOpt.isPresent()) {
+            Campus campus = campusOpt.get();
+
+            // 2. VÉRIFICATION DE SÉCURITÉ
+            if (!campus.getBatiments().isEmpty()) {
+                // S'il y a des bâtiments, on refuse la suppression
+                model.addAttribute("errorMessage", "Impossible de supprimer le campus " + nomC + " car il contient encore des bâtiments. Supprimez-les d'abord.");
+
+                // On recharge la liste pour afficher l'erreur
+                // Note : idéalement, on devrait rediriger avec un FlashAttribute,
+                // mais pour faire simple, on peut renvoyer la vue liste.
+                model.addAttribute("campusList", campusRepository.findAll());
+                return "campus/listCampus";
+            }
+
+            // 3. Suppression si vide
+            campusRepository.delete(campus);
+        }
+
+        return "redirect:/campus/list";
+    }
+
+    @GetMapping("/edit")
+    public String showEditCampusForm(@RequestParam String nomC, Model model) {
+        Optional<Campus> campus = campusRepository.findById(nomC);
+
+        if (campus.isPresent()) {
+            model.addAttribute("campus", campus.get());
+            model.addAttribute("allUniversities", universiteRepository.findAll());
+            return "campus/editCampusForm"; // Un nouveau template ou réutiliser l'ancien avec logique
+        }
+        return "redirect:/campus/list";
+    }
+
     // Le constructeur est correct si vous voulez conserver le println pour le débogage
     public CampusController() {
         System.out.println("les campus ");

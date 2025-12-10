@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/springsecurity6">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter un Campus</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .container { max-width: 500px; margin: 0 auto; padding: 20px; border: 1px solid #ccc; border-radius: 5px; }
+        label { display: block; margin-top: 10px; font-weight: bold; }
+        input[type="text"], select { width: 100%; padding: 8px; margin-top: 5px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        button { background-color: #007bff; color: white; padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 20px; }
+        button:hover { background-color: #0056b3; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Créer un Nouveau Campus</h2>
+    <a th:href="@{/campus/list}" style="display: block; margin-bottom: 20px;">
+        ← Retour à la Liste
+    </a>
+
+    <form th:action="@{/campus/save}" method="post">
+
+        <label for="nomC">Nom du Campus (Non modifiable):</label>
+        <input type="text" id="nomC" name="nomC" th:value="${campus.nomC}" readonly style="background-color: #e9ecef;"/>
+
+        <label for="ville">Ville :</label>
+        <input type="text" id="ville" name="ville" required/>
+
+        <label for="universiteAcronyme">Université de rattachement:</label>
+        <select id="universiteAcronyme" name="universiteAcronyme" required>
+            <option value="">-- Sélectionner une Université --</option>
+            <option th:each="uni : ${allUniversities}"
+                    th:value="${uni.acronyme}"
+                    th:text="${uni.nom} + ' (' + ${uni.acronyme} + ')'">
+                Nom Université (Acronyme)
+            </option>
+        </select>
+
+        <button type="submit">Enregistrer le Campus</button>
+    </form>
+</div>
+</body>
+</html>
