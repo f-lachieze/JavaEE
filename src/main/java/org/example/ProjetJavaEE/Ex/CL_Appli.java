@@ -42,12 +42,9 @@ public class CL_Appli implements CommandLineRunner {
     @Autowired
     private UniversiteRepository universiteRepository;
 
-    // Dans CL_Appli.java (ajoutez si manquantes)
-
-    // Assurez-vous d'avoir l'interface ExploiteRepository si vous ne l'avez pas déjà
     @Autowired
     private ExploiteRepository exploiteRepository;
-// ... vos autres injections (CampusRepository, BatimentRepository, ComposanteRepository, SalleRepository)
+
 
 
 
@@ -493,8 +490,6 @@ public class CL_Appli implements CommandLineRunner {
 		}
 	}
 
-// Assurez-vous d'appeler tsListerAmphisSpecifiques() dans votre run() :
-// tsListerAmphisSpecifiques();
 
 
 	/**
@@ -542,7 +537,7 @@ public class CL_Appli implements CommandLineRunner {
         Batiment trioletB05 = batimentRepository.save(new Batiment("triolet_b05", 1964, triolet));
         Batiment stPriestB02 = batimentRepository.save(new Batiment("stPriest_b02", 1982, stPriest));
 
-        // Dans CL_Appli.java -> insertProjectDataInitial()
+
 
 // ... (Après l'insertion de stPriestB02) ...
 
@@ -599,23 +594,15 @@ public class CL_Appli implements CommandLineRunner {
 
         // --- 6. EXPLOITE (Liaison Many-to-Many) ---
         // Nécessite l'implémentation des entités ExploiteId et Exploite.
-        // Si vous utilisez une entité Exploiite :
         // exploiteRepository.save(new Exploite(fds, trioletB16)); // Exploite(Composante, Batiment)
 
-        // Si vous n'avez pas d'entité Exploite, l'insertion n'est pas possible directement ici.
-        // Je pars du principe que vous utiliserez une entité Exploite pour le moment.
 
-
-
-        // Si Exploite est une entité :
         exploiteRepository.save(new Exploite(fds, trioletB16));
         exploiteRepository.save(new Exploite(iae, trioletB16));
         exploiteRepository.save(new Exploite(fds, trioletB36));
         exploiteRepository.save(new Exploite(iae, trioletB05));
 
         System.out.println("--- Insertion du Jeu de Données Initial Terminé. ---");
-
-
 
 
         // --- Récupérer les références des Bâtiments factices (pour l'insertion des salles) ---

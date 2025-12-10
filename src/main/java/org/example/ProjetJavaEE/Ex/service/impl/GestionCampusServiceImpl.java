@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Optional;
-import org.example.ProjetJavaEE.Ex.domain.ReservationRepository; // ⬅️ IMPORT
+import org.example.ProjetJavaEE.Ex.domain.ReservationRepository;
 import org.example.ProjetJavaEE.Ex.modele.Reservation;
 
 import org.example.ProjetJavaEE.Ex.modele.TypeSalle;
@@ -70,7 +70,7 @@ public class GestionCampusServiceImpl implements GestionCampusService {
     public Long compterTDSallesMontpellier() {
         // Solution la plus propre: Ajouter une méthode 'countAccessibleTDSallesUnder40InMontpellier()'
         // dans SalleRepository qui utilise un COUNT JPQL.
-        // Si vous utilisez la méthode existante qui retourne une List<Salle>, on compte sa taille.
+        // la méthode existante qui retourne une List<Salle>, on compte sa taille.
         List<Salle> salles = salleRepository.findAccessibleTDSallesUnder40InMontpellier();
         return (long) salles.size();
     }

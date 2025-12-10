@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Set;
 
-@Service // Ne pas oublier de déclarer la classe comme un Service Spring
+@Service // déclarer la classe comme un Service Spring
 public class GestionComposanteServiceImpl implements IGestionComposanteService {
 
     @Autowired
@@ -17,7 +17,6 @@ public class GestionComposanteServiceImpl implements IGestionComposanteService {
 
     @Override
     public Set<Batiment> listerBatimentsExploites(String acronymeComposante) {
-        // Nous allons créer cette méthode dans le repository à l'étape suivante
         return composanteRepository.findBatimentsExploitesByAcronyme(acronymeComposante);
     }
 

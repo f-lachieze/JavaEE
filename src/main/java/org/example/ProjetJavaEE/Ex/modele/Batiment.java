@@ -19,13 +19,13 @@ public class Batiment {
 	private int anneeConstruction;
 
 	// Relation ManyToOne avec Campus (pour l'enrichir)
-	// Campus(nomC) est la FK dans la table Batiment [cite: 42]
+	// Campus(nomC) est la FK dans la table Batiment
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "campus", nullable = false)
-	private Campus campus; // Un bâtiment appartient à un campus [cite: 5, 11]
+	private Campus campus; // Un bâtiment appartient à un campus
 
 	// 1. Association One-to-Many avec Salle
-	// MappedBy pointe vers l'attribut 'building' dans la classe Salle [cite: 17]
+	// MappedBy pointe vers l'attribut 'building' dans la classe Salle
 	@OneToMany(mappedBy = "batiment", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Set<Salle> salles = new HashSet<>();
 
@@ -44,7 +44,6 @@ public class Batiment {
 		this.campus = campus;
 	}
 
-    // ... (vos champs codeB, anneeConstruction, campus)
 
 
 

@@ -62,7 +62,6 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/campus/list")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/batiment/list")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/salle/list")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/service/capacity", "GET")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/register")).permitAll()
 
                         // RÈGLES PROFESSEUR
@@ -90,6 +89,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/campus/save")).hasRole("ADMIN")
 
 
+                        .requestMatchers(new AntPathRequestMatcher("/service/capacity", "GET")).permitAll()
                         // RÈGLE GÉNÉRALE (Doit être la dernière)
                         .anyRequest().authenticated()
                 )

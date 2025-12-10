@@ -9,7 +9,7 @@ import java.util.Set;
 @Table(name = "COMPOSANTE")
 public class Composante {
 
-    // Clé Primaire (en gras) [cite: 21, 38]
+    // Clé Primaire
     @Id
     @Column(name = "acronyme", unique = true, nullable = false)
     private String acronyme;
@@ -20,8 +20,7 @@ public class Composante {
     @Column(name = "responsable")
     private String responsable;
 
-    // RELATION AVEC BATIMENT : Many-to-Many via la table d'association 'Exploite' [cite: 6, 48]
-    // Dans Composante.java (Votre code actuel)
+    // RELATION AVEC BATIMENT : Many-to-Many via la table d'association 'Exploite'
     @ManyToMany
     @JoinTable(
             name = "EXPLOITE",
@@ -30,10 +29,10 @@ public class Composante {
     )
     private Set<Batiment> exploite = new HashSet<>();
 
-    // Constructeur par défaut (requis par JPA) [cite: 62]
+    // Constructeur par défaut (requis par JPA)
     public Composante() {}
 
-    // Dans Composante.java (à ajouter)
+
 
     public Composante(String acronyme, String nom, String responsable) {
         this.acronyme = acronyme;
